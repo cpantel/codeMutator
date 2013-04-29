@@ -50,6 +50,15 @@ class Tokenizer {
         T_CONTINUE => 'flow',
         T_RETURN => 'flow', 
     );
+
+    public function tokenize($source){
+        $tokens = array();
+        foreach(token_get_all($source) as $token) {
+            $new_token = $this->classify($token);
+            $tokens[]=$new_token;
+        }
+        return $tokens;
+    }
     
     public function classify($token) {
         if (is_array($token)) {
@@ -58,6 +67,9 @@ class Tokenizer {
             }
             return array('class'=>'inmutable', 'value'=>$token[1], 'info'=>$token[2]);
         } else {
+            if ($token == '=') {
+                return array('class'=>'assignment', 'value'=>'=', 'info'=>0);
+            }
             if (strpos('&/-%*|+^',$token) === false) {
                 return array('class'=>'inmutable', 'value'=>$token, 'info'=>0);
             }
