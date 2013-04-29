@@ -9,7 +9,42 @@ class Tokenizer {
         '(float)' => '(double)',
     );
     
-    private $classes = array(
+    private $classDescription = array(
+
+//        array('name'=>'', 'type'=>'asymmetric', 'genes'=>array('gene'=>'', 'pool'=>array('',''))),
+//       array('name'=>'', 'type'=>'symmetric', 'pool'=>array('','')),
+        
+        array('name'=>'clone', 'type'=>'asymmetric', 'genes'=>array(
+            'gene'=>'clone', 'genePool'=>array('=')
+        )),
+        array('name'=>'flow', 'type'=>'asymmetric',  array(
+            'gene'=>'break', 'genePool'=>array('exit','return','continue',''),
+            'gene'=>'return', 'genePool'=>array('break','exit','continue',''),
+            'gene'=>'continue', 'genePool'=>array('break','exit','return',''),
+            'gene'=>'exit', 'genePool'=>array(''),
+            
+        )),
+        array('name'=>'arithmetic', 'type'=>'symmetric', 'pool'=>array('&','/','-','%','*','|','+','^')),
+
+        array('name'=>'bitwise', 'type'=>'symmetric', 'pool'=>array('>>','<<')),
+        array('name'=>'typeCasting', 'type'=>'symmetric', 'pool'=>array('boolean','integer', 'double', 'object', 'string')),
+        array('name'=>'logical', 'type'=>'symmetric', 'pool'=>array('&&','||','and','or','xor')),
+
+
+        array('name'=>'incrementing', 'type'=>'symmetric', 'pool'=>array('++','--')),        
+        array('name'=>'comparisson', 'type'=>'symmetric', 'pool'=>array('==','>=','===','!=','!==','<=')),
+
+
+        
+        array('name'=>'accessControl', 'type'=>'symmetric', 'pool'=>array('public','private','protected')),
+        array('name'=>'bitwiseAssignment', 'type'=>'symmetric', 'pool'=>array('<<=','>>=','^=')),
+        array('name'=>'assignment', 'type'=>'symmetric', 'pool'=>array('&=','.=','/=','-=','%=','*=','|=','+=')),
+        
+
+        
+    );
+    
+    private $classMapper = array(
         T_AND_EQUAL => 'assignment',
         T_CONCAT_EQUAL => 'assignment',    
         T_DIV_EQUAL => 'assignment',
@@ -34,9 +69,9 @@ class Tokenizer {
         T_PUBLIC => 'accessControl',
         T_DEC => 'incrementing ',    
         T_INC => 'incrementing ',
-        T_SL_EQUAL => 'bitwiseassignment',
-        T_SR_EQUAL => 'bitwiseassignment', 
-        T_XOR_EQUAL => 'bitwiseassignment',
+        T_SL_EQUAL => 'bitwiseAssignment',
+        T_SR_EQUAL => 'bitwiseAssignment', 
+        T_XOR_EQUAL => 'bitwiseAssignment',
         T_BOOL_CAST => 'typeCasting',
         T_DOUBLE_CAST => 'typeCasting',
         T_INT_CAST => 'typeCasting',
@@ -50,7 +85,11 @@ class Tokenizer {
         T_CONTINUE => 'flow',
         T_RETURN => 'flow', 
     );
-
+    public function toJson($tokens){
+        return json_encode(array('classes'=>$this->classDescription, 'tokens'=>$tokens));
+    
+    }
+    
     public function tokenize($source){
         $tokens = array();
         foreach(token_get_all($source) as $token) {
@@ -62,8 +101,8 @@ class Tokenizer {
     
     public function classify($token) {
         if (is_array($token)) {
-            if (isset($this->classes[$token[0]])) {
-                return array('class'=>$this->classes[$token[0]], 'value'=>$token[1], 'info'=>$token[2]);  
+            if (isset($this->classMapper[$token[0]])) {
+                return array('class'=>$this->classMapper[$token[0]], 'value'=>$token[1], 'info'=>$token[2]);  
             }
             return array('class'=>'inmutable', 'value'=>$token[1], 'info'=>$token[2]);
         } else {

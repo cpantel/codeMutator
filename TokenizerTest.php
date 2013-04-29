@@ -4,18 +4,30 @@ require_once(dirname(__FILE__). '/Tokenizer.php');
 /*
   define classes
 
-  tokenize source
+  tokenize source OK
 
   unalias tokens OK
 
   classify tokens OK
 
-  normalize tokens
-
   generate json with classes and tokens
 */
 
 class TokenizerTest extends PHPUnit_Framework_TestCase {
+//     public function testToJson() {
+//     
+//         $t = new Tokenizer();
+//         $expected = '[{"class":"inmutable","value":"<?php ","info":1},{"class":"inmutable","value":"$a","info":1},{"class":"assignment","value":"=","info":0},{"class":"inmutable","value":"1","info":1},{"class":"inmutable","value":";","info":0}]';
+//         $json = $t->tokenize('');
+//         $this->assertEquals($expected,$tokenized);   
+//     
+//     }
+    public function testJson() {
+        $t = new Tokenizer();
+        print $t->toJson($t->tokenize('<?php $a=1;$a=$a+1;'));
+    
+    }
+    
     public function testTokenizeUnalias() {
         $t = new Tokenizer();
         $expected = array(
@@ -33,6 +45,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
             array('class'=>'inmutable',   'value'=>';',      'info'=>0),
         );
         $tokenized = $t->tokenize('<?php $a=1;$a=(int)$a+1;');
+        
         $this->assertEquals($expected,$tokenized);   
     }
     public function testTokenizeSimple() {
