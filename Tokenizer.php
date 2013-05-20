@@ -14,34 +14,68 @@ class Tokenizer {
 //        array('name'=>'', 'type'=>'asymmetric', 'genes'=>array('gene'=>'', 'pool'=>array('',''))),
 //       array('name'=>'', 'type'=>'symmetric', 'pool'=>array('','')),
         
-        array('name'=>'clone', 'type'=>'asymmetric', 'genes'=>array(
+        array(
+          'name'=>'clone',
+          'type'=>'asymmetric',
+          'genes'=>array(
             'gene'=>'clone', 'genePool'=>array('=')
-        )),
-        array('name'=>'flow', 'type'=>'asymmetric',  array(
+          )
+        ),
+        array(
+          'name'=>'flow',
+          'type'=>'asymmetric',
+          'genes'=> array(
             'gene'=>'break', 'genePool'=>array('exit','return','continue',''),
             'gene'=>'return', 'genePool'=>array('break','exit','continue',''),
             'gene'=>'continue', 'genePool'=>array('break','exit','return',''),
             'gene'=>'exit', 'genePool'=>array(''),
-            
-        )),
-        array('name'=>'arithmetic', 'type'=>'symmetric', 'pool'=>array('&','/','-','%','*','|','+','^')),
-
-        array('name'=>'bitwise', 'type'=>'symmetric', 'pool'=>array('>>','<<')),
-        array('name'=>'typeCasting', 'type'=>'symmetric', 'pool'=>array('boolean','integer', 'double', 'object', 'string')),
-        array('name'=>'logical', 'type'=>'symmetric', 'pool'=>array('&&','||','and','or','xor')),
-
-
-        array('name'=>'incrementing', 'type'=>'symmetric', 'pool'=>array('++','--')),        
-        array('name'=>'comparisson', 'type'=>'symmetric', 'pool'=>array('==','>=','===','!=','!==','<=')),
-
-
-        
-        array('name'=>'accessControl', 'type'=>'symmetric', 'pool'=>array('public','private','protected')),
-        array('name'=>'bitwiseAssignment', 'type'=>'symmetric', 'pool'=>array('<<=','>>=','^=')),
-        array('name'=>'assignment', 'type'=>'symmetric', 'pool'=>array('&=','.=','/=','-=','%=','*=','|=','+=')),
-        
-
-        
+          )  
+        ),
+        array(
+          'name'=>'arithmetic',
+          'type'=>'symmetric',
+          'genePool'=>array('&','/','-','%','*','|','+','^')
+        ),
+        array(
+          'name'=>'bitwise',
+          'type'=>'symmetric',
+          'genePool'=>array('>>','<<')
+        ),
+        array(
+          'name'=>'typeCasting',
+          'type'=>'symmetric',
+          'genePool'=>array('boolean','integer', 'double', 'object', 'string')
+        ),
+        array(
+          'name'=>'logical',
+          'type'=>'symmetric',
+          'genePool'=>array('&&','||','and','or','xor')
+        ),
+        array(
+          'name'=>'incrementing',
+          'type'=>'symmetric',
+          'genePool'=>array('++','--')
+        ),
+        array(
+          'name'=>'comparisson',
+          'type'=>'symmetric',
+          'genePool'=>array('==','>=','===','!=','!==','<=')
+        ),
+        array(
+          'name'=>'accessControl',
+          'type'=>'symmetric',
+          'genePool'=>array('public','private','protected')
+        ),
+        array(
+          'name'=>'bitwiseAssignment',
+          'type'=>'symmetric',
+          'pool'=>array('<<=','>>=','^=')
+        ),
+        array(
+          'name'=>'assignment',
+          'type'=>'symmetric',
+          'pool'=>array('&=','.=','/=','-=','%=','*=','|=','+=')
+        ),
     );
     
     private $classMapper = array(
@@ -85,9 +119,9 @@ class Tokenizer {
         T_CONTINUE => 'flow',
         T_RETURN => 'flow', 
     );
+    
     public function toJson($tokens){
         return json_encode(array('classes'=>$this->classDescription, 'tokens'=>$tokens));
-    
     }
     
     public function tokenize($source){
