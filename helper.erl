@@ -1,6 +1,11 @@
 -module(helper).
 -include_lib("eunit/include/eunit.hrl").
--export([readlines/1, read/1]).
+-export([
+  readlines/1,
+  read/1,
+  load_one_class/2,
+  prepare/1
+  ]).
 
 %abrir dets
 %cargar dets con clases
@@ -40,23 +45,27 @@
              
 load_one_class_test() ->
   ClassEts = prepare(classes),
-  load_one_class(ClassEts,{"key","value"}),
-  [{"key",ClassItem}] = ets:lookup(ClassEts,"key"),
-  ?_assert("value" =:= ClassItem).
+  load_one_class(ClassEts,fixtureGiveMeCloneClass()),
+  [{<<"clone">>,ClassItem}] = ets:lookup(ClassEts,<<"clone">>),
+  ?_assert(fixtureGiveMeCloneClass() =:= ClassItem).
 
-load_one_class(Ets,Class) ->
-  ets:insert(Ets, Class).
+load_one_class(Ets,Class={[{<<"name">>,Name}|_]}) ->
+  ets:insert(Ets, {Name,Class}).
 
 
-load_classes_testX() ->
-   ClassEts = prepare(classes),
-   load_classes(ClassEts, [{"name","clone"},{"type","asymmetric"},{"genes",{"gene","clone","genePool",["="]}}] ).
-   %[{<<"clone">>,ClassItem}] = ets:lookup(ClassEts,<<"clone">>).
+load_classes_test() ->
+  ClassEts = prepare(classes),
+  load_classes(ClassEts, fixtureGiveMeManyClasses()),
+  [{<<"clone">>,ClassItem1}] = ets:lookup(ClassEts,<<"clone">>),
+  ?_assert(fixtureGiveMeCloneClass() =:= ClassItem1),
+  [{<<"accessControl">>,ClassItem2}] = ets:lookup(ClassEts,<<"accessControl">>),
+  ?_assert(fixtureGiveMeAccessControlClass() =:= ClassItem2).
+
   
-% load_classes_empty_test() ->
-%   ClassEts = prepare(classes),
-%   load_classes(ClassEts,[]),
-%   {badmatch,[]} = ets:lookup(ClassEts,"key").
+load_classes_empty_test() ->
+  ClassEts = prepare(classes),
+  load_classes(ClassEts,[]),
+  [{error,ClassItem}] = ets:lookup(ClassEts,<<"key">>).
   %?_assert("" =:= ClassItem). 
   
 load_classes(_ClassEts,[]) ->
@@ -72,17 +81,29 @@ prepare(Ets) ->
 % borrable
 read_test() ->
    Buffer = read("[1,3.14,{\"key\":\"value\"}]"),
-   ?_assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]),
-   Buffer2 = read("\"classes\":[{\"name\":\"clone\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"clone\",\"genePool\":[\"=\"]}},{\"name\":\"flow\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"exit\",\"genePool\":[\"\"]}}").
+   ?_assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]).%,
+   %Buffer2 = read("\"classes\":[{\"name\":\"clone\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"clone\",\"genePool\":[\"=\"]}},{\"name\":\"flow\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"exit\",\"genePool\":[\"\"]}}").
    
 % THIS IS THE REALITY...   
 % {[{<<"classes">>,Classes},_]}=json_eep:json_to_term(helper:readlines("test/code.json")).
 
-fixtureGiveMeOneClass() ->
-[{[{<<"name">>,<<"clone">>},
-   {<<"type">>,<<"asymmetric">>},
-   {<<"genes">>,
-    {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}}]}].
+fixtureGiveMeCloneClass() ->
+{[
+  {<<"name">>,<<"clone">>},
+  {<<"type">>,<<"asymmetric">>},
+  {<<"genes">>,{[
+      {<<"gene">>,<<"clone">>},
+      {<<"genePool">>,[<<"=">>]}
+     ]}
+   }
+   ]
+   }.
+
+fixtureGiveMeAccessControlClass() ->
+{[{<<"name">>,<<"accessControl">>},
+   {<<"type">>,<<"symmetric">>},
+   {<<"genePool">>,
+    [<<"public">>,<<"private">>,<<"protected">>]}]}.
 
 
 fixtureGiveMeManyClasses() ->
@@ -133,9 +154,9 @@ fixtureGiveMeManyClasses() ->
 
      
 fixtureGiveMeOneToken() ->
-[{[{<<"class">>,<<"inmutable">>},
+{[{<<"class">>,<<"inmutable">>},
    {<<"value">>,<<"<?php ">>},
-   {<<"info">>,1}]}].
+   {<<"info">>,1}]}.
      
 fixtureGiveMeManyTokens() ->
 [{[{<<"class">>,<<"inmutable">>},
