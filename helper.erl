@@ -4,7 +4,8 @@
   read/1,
   load_one_class/2,
   load_classes/2,
-  prepare/1
+  prepare/1,
+  find_class/2
   ]).
 
 %abrir dets
@@ -50,7 +51,9 @@ load_classes(_ClassEts,[]) ->
 load_classes(ClassEts,[Class| Classes]) ->
   load_one_class(ClassEts,Class),
   load_classes(ClassEts,Classes).
-  
+
+find_class(ClassEts,Class) ->
+  ets:lookup(ClassEts,Class).
 
 %% TESTED OK  
   
