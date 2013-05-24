@@ -1,1 +1,5 @@
 *~
+*swp
+.~lock*#
+*.beam
+*.dump

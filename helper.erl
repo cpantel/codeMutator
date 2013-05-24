@@ -4,6 +4,7 @@
   readlines/1,
   read/1,
   load_one_class/2,
+  load_classes/2,
   prepare/1
   ]).
 
@@ -65,8 +66,10 @@ load_classes_test() ->
 load_classes_empty_test() ->
   ClassEts = prepare(classes),
   load_classes(ClassEts,[]),
-  [{error,ClassItem}] = ets:lookup(ClassEts,<<"key">>).
-  %?_assert("" =:= ClassItem). 
+  Res = ets:lookup(ClassEts,<<"key">>),
+  %io:ddformat("~p",[Res]).
+  
+  ?_assert(ets:lookup(ClassEts,<<"key">>) =:= []). 
   
 load_classes(_ClassEts,[]) ->
   true;
@@ -74,6 +77,8 @@ load_classes(ClassEts,[Class| Classes]) ->
   load_one_class(ClassEts,Class),
   load_classes(ClassEts,Classes).
   
+
+%% TESTED OK  
   
 prepare(Ets) ->
   ets:new(Ets, [set]).
@@ -192,15 +197,9 @@ fixtureGiveMeManyTokens() ->
  {[{<<"class">>,<<"inmutable">>},
    {<<"value">>,<<";">>},
    {<<"info">>,0}]}].
-
-     
-     
+   
 read(Line) ->
   json_eep:json_to_term(Line).
-
-
-  
-%% TESTED OK  
   
 readlines_test_() ->
    [
