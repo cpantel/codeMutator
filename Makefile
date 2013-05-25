@@ -1,13 +1,14 @@
 helper.beam: helper.erl
-	erl -compile helper.erl
+	erlc +export_all helper.erl
 
 	
 helper_test.beam: helper_test.erl
-	erl -compile helper_test
+	erlc helper_test.erl
 
 
 clean:
-	rm *.erl
+	rm -f *.beam
+	cp lib/*.beam .
 
-test: helper_test.beam helper.beam
+test: helper_test.beam helper.beam 
 	erl -noshell -s helper_test test -s init stop
