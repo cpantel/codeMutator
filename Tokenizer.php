@@ -8,23 +8,24 @@ class Tokenizer {
         '(real)'  => '(double)',
         '(float)' => '(double)',
     );
+
     
     private $classDescription = array(
         array(
           'name'=>'clone',
           'type'=>'asymmetric',
           'genes'=>array(
-            'clone'=>array('=')
+            array('gene'=>'clone', 'genePool'=>array('='))
           )
         ),
         array(
           'name'=>'flow',
           'type'=>'asymmetric',
           'genes'=> array(
-            'break' => array('','continue','exit','return'),
-            'return'=> array('','break','continue','exit'),
-            'continue'=> array('','break','exit','return'),
-            'exit'=> array(''),
+            array('gene'=>'break','genePool' => array('','continue','exit','return')),
+            array('gene'=>'return','genePool'=> array('','break','continue','exit')),
+            array('gene'=>'continue','genePool'=> array('','break','exit','return')),
+            array('gene'=>'exit','genePool'=> array(''))
           )  
         ),
         array(

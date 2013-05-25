@@ -74,7 +74,7 @@ mutate({
        ]}
    }) ->
   [<<"=">>]. %TODO UNHARDCODE
-  %find_gen(Value,Genes).
+  %find_genes(Value,Genes).
   
 % find_gen(Value, {[{<<"gene">>,<<"clone">>},{<<"genePool">>,GenePool}]})  
 %   GenePool.

@@ -13,28 +13,11 @@ require_once(dirname(__FILE__). '/Tokenizer.php');
   generate json with classes and tokens
 */
 
-
 class TokenizerTest extends PHPUnit_Framework_TestCase {
-
     private function getJsonClasses() {
         return '['. 
-        '{'.
-        '"name":"clone",'.
-        '"type":"asymmetric",'.
-        '"genes":{'.        
-        '"clone":["="]'. 
-        '}'.
-        '},'.
-        '{'.
-        '"name":"flow",'.        
-        '"type":"asymmetric",'. 
-        '"genes":{'.
-        '"break":["","continue","exit","return"],'.
-        '"return":["","break","continue","exit"],'.
-        '"continue":["","break","exit","return"],'.        
-        '"exit":[""]'. 
-        '}'.
-        '},'.
+        '{"name":"clone","type":"asymmetric","genes":[{"gene":"clone","genePool":["="]}]},'.
+        '{"name":"flow","type":"asymmetric","genes":[{"gene":"break","genePool":["exit","return","continue",""]},{"gene":"return","genePool":["break","exit","continue",""]},{"gene":"continue","genePool":["break","exit","return",""]},{"gene":"exit","genePool":[""]}]},'.
         '{'.
         '"name":"arithmetic",'.        
         '"type":"symmetric",'. 
