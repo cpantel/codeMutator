@@ -1,7 +1,7 @@
 -module(helper).
 -export([
   prepare/1,
-  %mutate/2,
+  mutate/1,
   readlines/1
   ]).
 
@@ -61,9 +61,34 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
   [{<<"string">>,ClassItem}]=lookup_class(ClassMap,<<"string">>),
   {<<"string">>,<<"inmutable">>,Token,ClassItem}.
 
+        
+mutate({ ClassName, <<"inmutable">>, Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , Class}) ->
+   [Value];
+mutate({
+       ClassName, <<"asymmetric">>, 
+       Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]},
+       Class={[
+         {<<"name">>,Value},
+         {<<"type">>,<<"asymmetric">>},
+         {<<"genes">>,Genes}
+       ]}
+   }) ->
+  [<<"=">>]. %TODO UNHARDCODE
+  %find_gen(Value,Genes).
   
-% % mutate({_Class,_Type,Token,_Class}) ->
-% %   
+% find_gen(Value, {[{<<"gene">>,<<"clone">>},{<<"genePool">>,GenePool}]})  
+%   GenePool.
+  
+ 
+  
+% mutate({ ClassName, <<"asymmetric">>, Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} ,Class}) ->
+%  {[{<<"name">>,<<"clone">>},
+%   {<<"type">>,<<"asymmetric">>},
+%   {<<"genes">>,
+%    {[{<<"gene">>,<<"clone">>},{<<"genePool">>,GenePool}]}}
+%  ]}=Class,
+%    GenePool.
+   
 % %        %Token=
 % % mutate({[{<<"class">>,<<"string">>},{<<"value">>,Value},_]},_Class) ->
 % %    [Value].
