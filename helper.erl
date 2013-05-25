@@ -1,7 +1,7 @@
 -module(helper).
 -export([
   prepare/1,
-  mutate/2,
+  %mutate/2,
   readlines/1
   ]).
 
@@ -57,15 +57,16 @@
 %mutate({[]},{[{<<"name">>,<<"string">>},{<<"type">>,<<"inmutable">>}]})
 
 
-classify_token(ClassEts,Token={[{<<"class">>,TokenClass}|_]}) ->
-  [{<<"string">>,ClassItem}]=find_class(ClassEts,<<"string">>),
+classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
+  [{<<"string">>,ClassItem}]=lookup_class(ClassMap,<<"string">>),
   {<<"string">>,<<"inmutable">>,Token,ClassItem}.
 
-mutate([],_) ->
-  [];
-       %Token=
-mutate({[{<<"class">>,<<"string">>},{<<"value">>,Value},_]},_Class) ->
-   [Value].
+  
+% % mutate({_Class,_Type,Token,_Class}) ->
+% %   
+% %        %Token=
+% % mutate({[{<<"class">>,<<"string">>},{<<"value">>,Value},_]},_Class) ->
+% %    [Value].
 
 % mutate({[{<<"class">>,TokenClass},{<<"value">>,Value},_]},_Class) ->
 %    [Value].
@@ -77,14 +78,14 @@ mutate({[{<<"class">>,<<"string">>},{<<"value">>,Value},_]},_Class) ->
 load_one_class(Ets,Class={[{<<"name">>,Name}|_]}) ->
   ets:insert(Ets, {Name,Class}).
 
-load_classes(_ClassEts,[]) ->
+load_classes(_ClassMap,[]) ->
   true;
-load_classes(ClassEts,[Class| Classes]) ->
-  load_one_class(ClassEts,Class),
-  load_classes(ClassEts,Classes).
+load_classes(ClassMap,[Class| Classes]) ->
+  load_one_class(ClassMap,Class),
+  load_classes(ClassMap,Classes).
 
-find_class(ClassEts,Class) ->
-  ets:lookup(ClassEts,Class).
+lookup_class(ClassMap,Class) ->
+  ets:lookup(ClassMap,Class).
 
 %% TESTED OK  
   
