@@ -12,6 +12,10 @@ class Tokenizer {
     
     private $classDescription = array(
         array(
+          'name'=>'string',
+          'type'=>'inmutable',
+        ),
+        array(
           'name'=>'clone',
           'type'=>'asymmetric',
           'genes'=>array(
@@ -23,9 +27,9 @@ class Tokenizer {
           'type'=>'asymmetric',
           'genes'=> array(
             array('gene'=>'break','genePool' => array('','continue','exit','return')),
-            array('gene'=>'return','genePool'=> array('','break','continue','exit')),
             array('gene'=>'continue','genePool'=> array('','break','exit','return')),
-            array('gene'=>'exit','genePool'=> array(''))
+            array('gene'=>'exit','genePool'=> array('')),
+            array('gene'=>'return','genePool'=> array('','break','continue','exit'))
           )  
         ),
         array(

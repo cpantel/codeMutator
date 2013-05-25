@@ -186,16 +186,22 @@ fixtureGiveMeManyClasses() ->
    ]},
  {[{<<"name">>,<<"clone">>},
    {<<"type">>,<<"asymmetric">>},
-   {<<"genes">>,
-    {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}}]},
+   {<<"genes">>,[
+      {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}
+    ]
+   }
+  ]},
+    
  {[{<<"name">>,<<"flow">>},
    {<<"type">>,<<"asymmetric">>},
-   {<<"genes">>,
-    {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<"">>]}]},
-    {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-    {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]},
-    {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]}
-    }]},
+   {<<"genes">>,[
+      {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
+      {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]},
+      {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<"">>]}]},
+      {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]}
+    ]
+   }
+  ]},
  {[{<<"name">>,<<"arithmetic">>},
    {<<"type">>,<<"symmetric">>},
    {<<"genePool">>,
@@ -226,10 +232,10 @@ fixtureGiveMeManyClasses() ->
     [<<"public">>,<<"private">>,<<"protected">>]}]},
  {[{<<"name">>,<<"bitwiseAssignment">>},
    {<<"type">>,<<"symmetric">>},
-   {<<"pool">>,[<<"<<=">>,<<">>=">>,<<"^=">>]}]},
+   {<<"genePool">>,[<<"<<=">>,<<">>=">>,<<"^=">>]}]},
  {[{<<"name">>,<<"assignment">>},
    {<<"type">>,<<"symmetric">>},
-   {<<"pool">>,
+   {<<"genePool">>,
     [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,
      <<"|=">>,<<"+=">>]}]}].
 
