@@ -138,13 +138,13 @@ class Tokenizer {
             if (isset($this->classMapper[$token[0]])) {
                 return array('class'=>$this->classMapper[$token[0]], 'value'=>$token[1], 'info'=>$token[2]);  
             }
-            return array('class'=>'inmutable', 'value'=>$token[1], 'info'=>$token[2]);
+            return array('class'=>'string', 'value'=>$token[1], 'info'=>$token[2]);
         } else {
             if ($token == '=') {
                 return array('class'=>'assignment', 'value'=>'=', 'info'=>0);
             }
             if (strpos('&/-%*|+^',$token) === false) {
-                return array('class'=>'inmutable', 'value'=>$token, 'info'=>0);
+                return array('class'=>'string', 'value'=>$token, 'info'=>0);
             }
             return array('class'=>'arithmetic', 'value'=>$token, 'info'=>0);
         }

@@ -31,17 +31,17 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         '{"name":"bitwiseAssignment","type":"symmetric","pool":["<<=",">>=","^="]},'.
         '{"name":"assignment","type":"symmetric","pool":["&=",".=","\/=","-=","%=","*=","|=","+="]}'.
         '],"tokens":['.
-        '{"class":"inmutable","value":"<?php ","info":1},'.
-        '{"class":"inmutable","value":"$a","info":1},'.
+        '{"class":"string","value":"<?php ","info":1},'.
+        '{"class":"string","value":"$a","info":1},'.
         '{"class":"assignment","value":"=","info":0},'.
-        '{"class":"inmutable","value":"1","info":1},'.
-        '{"class":"inmutable","value":";","info":0},'.
-        '{"class":"inmutable","value":"$a","info":1},'.
+        '{"class":"string","value":"1","info":1},'.
+        '{"class":"string","value":";","info":0},'.
+        '{"class":"string","value":"$a","info":1},'.
         '{"class":"assignment","value":"=","info":0},'.
-        '{"class":"inmutable","value":"$a","info":1},'.
+        '{"class":"string","value":"$a","info":1},'.
         '{"class":"arithmetic","value":"+","info":0},'.
-        '{"class":"inmutable","value":"1","info":1},'.
-        '{"class":"inmutable","value":";","info":0}]}';
+        '{"class":"string","value":"1","info":1},'.
+        '{"class":"string","value":";","info":0}]}';
         
         $json = $t->toJson($t->tokenize('<?php $a=1;$a=$a+1;'));
         $this->assertEquals($expected, $json);
@@ -51,18 +51,18 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function testTokenizeUnalias() {
         $t = new Tokenizer();
         $expected = array(
-            array('class'=>'inmutable',   'value'=>'<?php ', 'info'=>1),
-            array('class'=>'inmutable',   'value'=>'$a',     'info'=>1),
+            array('class'=>'string',   'value'=>'<?php ', 'info'=>1),
+            array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'assignment',  'value'=>'=',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'1',      'info'=>1),
-            array('class'=>'inmutable',   'value'=>';',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'$a',     'info'=>1),
+            array('class'=>'string',   'value'=>'1',      'info'=>1),
+            array('class'=>'string',   'value'=>';',      'info'=>0),
+            array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'assignment',  'value'=>'=',      'info'=>0),
             array('class'=>'typeCasting', 'value'=>'(int)',  'info'=>1),
-            array('class'=>'inmutable',   'value'=>'$a',     'info'=>1),
+            array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'arithmetic',  'value'=>'+',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'1',      'info'=>1),
-            array('class'=>'inmutable',   'value'=>';',      'info'=>0),
+            array('class'=>'string',   'value'=>'1',      'info'=>1),
+            array('class'=>'string',   'value'=>';',      'info'=>0),
         );
         $tokenized = $t->tokenize('<?php $a=1;$a=(int)$a+1;');
         
@@ -71,17 +71,17 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function testTokenizeSimple() {
         $t = new Tokenizer();
         $expected = array(
-            array('class'=>'inmutable',   'value'=>'<?php ', 'info'=>1),
-            array('class'=>'inmutable',   'value'=>'$a',     'info'=>1),
+            array('class'=>'string',   'value'=>'<?php ', 'info'=>1),
+            array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'assignment',  'value'=>'=',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'1',      'info'=>1),
-            array('class'=>'inmutable',   'value'=>';',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'$a',     'info'=>1),
+            array('class'=>'string',   'value'=>'1',      'info'=>1),
+            array('class'=>'string',   'value'=>';',      'info'=>0),
+            array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'assignment',  'value'=>'=',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'$a',     'info'=>1),
+            array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'arithmetic',  'value'=>'+',      'info'=>0),
-            array('class'=>'inmutable',   'value'=>'1',      'info'=>1),
-            array('class'=>'inmutable',   'value'=>';',      'info'=>0),
+            array('class'=>'string',   'value'=>'1',      'info'=>1),
+            array('class'=>'string',   'value'=>';',      'info'=>0),
         );
         $tokenized = $t->tokenize('<?php $a=1;$a=$a+1;');
         $this->assertEquals($expected,$tokenized);   
@@ -97,7 +97,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function testClassifyString() {
         $t = new Tokenizer();
         $token = ';';
-        $expected = array('class'=>'inmutable','value'=>';', 'info'=>0);
+        $expected = array('class'=>'string','value'=>';', 'info'=>0);
         $classified = $t->classify($token);
         $this->assertEquals($expected,$classified);        
 
@@ -122,7 +122,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function testClassifyTokenInmutableToken() {
         $t = new Tokenizer();
         $token = array(0, " ", 1);
-        $expected = array('class'=>'inmutable','value'=>' ', 'info'=>1);
+        $expected = array('class'=>'string','value'=>' ', 'info'=>1);
         $classified = $t->classify($token);
         $this->assertEquals($expected,$classified);        
     }     
