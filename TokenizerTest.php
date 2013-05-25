@@ -15,22 +15,77 @@ require_once(dirname(__FILE__). '/Tokenizer.php');
 
 
 class TokenizerTest extends PHPUnit_Framework_TestCase {
-    public function testJson() {
-        $t = new Tokenizer();
-        $expected = 
-        '{"classes":['.
-        '{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},'.
-        '{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}},'.
-        '{"name":"arithmetic","type":"symmetric","genePool":["&","\/","-","%","*","|","+","^"]},'.
-        '{"name":"bitwise","type":"symmetric","genePool":[">>","<<"]},'.
-        '{"name":"typeCasting","type":"symmetric","genePool":["boolean","integer","double","object","string"]},'.
-        '{"name":"logical","type":"symmetric","genePool":["&&","||","and","or","xor"]},'.
-        '{"name":"incrementing","type":"symmetric","genePool":["++","--"]},'.
-        '{"name":"comparisson","type":"symmetric","genePool":["==",">=","===","!=","!==","<="]},'.
-        '{"name":"accessControl","type":"symmetric","genePool":["public","private","protected"]},'.
-        '{"name":"bitwiseAssignment","type":"symmetric","pool":["<<=",">>=","^="]},'.
-        '{"name":"assignment","type":"symmetric","pool":["&=",".=","\/=","-=","%=","*=","|=","+="]}'.
-        '],"tokens":['.
+
+    private function getJsonClasses() {
+        return '['. 
+        '{'.
+        '"name":"clone",'.
+        '"type":"asymmetric",'.
+        '"genes":{'.        
+        '"clone":["="]'. 
+        '}'.
+        '},'.
+        '{'.
+        '"name":"flow",'.        
+        '"type":"asymmetric",'. 
+        '"genes":{'.
+        '"break":["","continue","exit","return"],'.
+        '"return":["","break","continue","exit"],'.
+        '"continue":["","break","exit","return"],'.        
+        '"exit":[""]'. 
+        '}'.
+        '},'.
+        '{'.
+        '"name":"arithmetic",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["&","\/","-","%","*","|","+","^"]'.
+        '},'.
+        '{'.
+        '"name":"bitwise",'.        
+        '"type":"symmetric",'. 
+        '"genePool":[">>","<<"]'.
+        '},'.
+        '{'.
+        '"name":"typeCasting",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["boolean","integer","double","object","string"]'.
+        '},'.
+        '{'.
+        '"name":"logical",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["&&","||","and","or","xor"]'.
+        '},'.
+        '{'.
+        '"name":"incrementing",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["++","--"]'.
+        '},'.
+        '{'.
+        '"name":"comparisson",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["==",">=","===","!=","!==","<="]'.
+        '},'.
+        '{'.
+        '"name":"accessControl",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["public","private","protected"]'.
+        '},'.
+        '{'.
+        '"name":"bitwiseAssignment",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["<<=",">>=","^="]'.
+        '},'.
+        '{'.
+        '"name":"assignment",'.        
+        '"type":"symmetric",'. 
+        '"genePool":["&=",".=","\/=","-=","%=","*=","|=","+="]'.
+        '}'.
+        ']';
+    
+    }
+    
+    private function getJsonTokens(){
+        return '['.
         '{"class":"string","value":"<?php ","info":1},'.
         '{"class":"string","value":"$a","info":1},'.
         '{"class":"assignment","value":"=","info":0},'.
@@ -41,8 +96,12 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         '{"class":"string","value":"$a","info":1},'.
         '{"class":"arithmetic","value":"+","info":0},'.
         '{"class":"string","value":"1","info":1},'.
-        '{"class":"string","value":";","info":0}]}';
-        
+        '{"class":"string","value":";","info":0}]';
+    
+    }
+    public function testJson() {
+        $t = new Tokenizer();
+        $expected ='{"classes":'.$this->getJsonClasses().',"tokens":' . $this->getJsonTokens() .'}';
         $json = $t->toJson($t->tokenize('<?php $a=1;$a=$a+1;'));
         $this->assertEquals($expected, $json);
     }

@@ -10,25 +10,21 @@ class Tokenizer {
     );
     
     private $classDescription = array(
-
-//        array('name'=>'', 'type'=>'asymmetric', 'genes'=>array('gene'=>'', 'pool'=>array('',''))),
-//       array('name'=>'', 'type'=>'symmetric', 'pool'=>array('','')),
-        
         array(
           'name'=>'clone',
           'type'=>'asymmetric',
           'genes'=>array(
-            'gene'=>'clone', 'genePool'=>array('=')
+            'clone'=>array('=')
           )
         ),
         array(
           'name'=>'flow',
           'type'=>'asymmetric',
           'genes'=> array(
-            'gene'=>'break', 'genePool'=>array('exit','return','continue',''),
-            'gene'=>'return', 'genePool'=>array('break','exit','continue',''),
-            'gene'=>'continue', 'genePool'=>array('break','exit','return',''),
-            'gene'=>'exit', 'genePool'=>array(''),
+            'break' => array('','continue','exit','return'),
+            'return'=> array('','break','continue','exit'),
+            'continue'=> array('','break','exit','return'),
+            'exit'=> array(''),
           )  
         ),
         array(
@@ -69,12 +65,12 @@ class Tokenizer {
         array(
           'name'=>'bitwiseAssignment',
           'type'=>'symmetric',
-          'pool'=>array('<<=','>>=','^=')
+          'genePool'=>array('<<=','>>=','^=')
         ),
         array(
           'name'=>'assignment',
           'type'=>'symmetric',
-          'pool'=>array('&=','.=','/=','-=','%=','*=','|=','+=')
+          'genePool'=>array('&=','.=','/=','-=','%=','*=','|=','+=')
         ),
     );
     
