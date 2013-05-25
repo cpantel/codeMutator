@@ -1,16 +1,15 @@
 -module(helper).
 -export([
-  readlines/1,
-  read/1,
-  load_one_class/2,
-  load_classes/2,
   prepare/1,
-  find_class/2
+  mutate/2,
+  readlines/1
   ]).
 
 %abrir dets
 %cargar dets con clases
-%mutar tokens(
+% para cada token
+%    obtener clases
+%    mutar token
 
 
 %   statistics(runtime),
@@ -43,6 +42,38 @@
 %{"classes":[{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}}
 
 
+
+% helper:mutate({[{<<"class">>,<<"inmutable">>},
+%                                     {<<"value">>,<<"?a">>},
+%                                     {<<"info">>,1}]},
+%                                   {[{<<"name">>,<<"string">>},
+%                                     {<<"type">>,<<"inmutable">>}]}) (helper.erl,
+
+% helper:mutate({[{<<"class">>,<<"inmutable">>},
+%                                     {<<"value">>,<<"<?php ">>},
+%                                     {<<"info">>,1}]},Class) 
+
+%mutate({[]},{[{<<"name">>,<<"string">>},{<<"type">>,<<"inmutable">>}]})
+%mutate({[]},{[{<<"name">>,<<"string">>},{<<"type">>,<<"inmutable">>}]})
+
+
+classify_token(ClassEts,Token={[{<<"class">>,TokenClass}|_]}) ->
+  [{<<"string">>,ClassItem}]=find_class(ClassEts,<<"string">>),
+  {<<"string">>,<<"inmutable">>,Token,ClassItem}.
+
+mutate([],_) ->
+  [];
+       %Token=
+mutate({[{<<"class">>,<<"string">>},{<<"value">>,Value},_]},_Class) ->
+   [Value].
+
+% mutate({[{<<"class">>,TokenClass},{<<"value">>,Value},_]},_Class) ->
+%    [Value].
+
+%  {[{<<"class">>,<<"inmutable">>},
+%   {<<"value">>,<<"<?php ">>},
+%   {<<"info">>,1}]}.
+   
 load_one_class(Ets,Class={[{<<"name">>,Name}|_]}) ->
   ets:insert(Ets, {Name,Class}).
 

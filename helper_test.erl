@@ -12,8 +12,8 @@
 
 % mutate_test() ->
 %    [{Classes,_},{Tokens,_}] = mutate("test/oneline.json"),
-%    ?_assert(Classes =:= "classes"),
-%    ?_assert(Tokens =:= "tokens").
+%    ?assert(Classes =:= "classes"),
+%    ?assert(Tokens =:= "tokens").
 
 %load_classes_test()->
 %  TestClasses = epp_json_to_term(...),
@@ -29,55 +29,83 @@
 %   dets:insert(ClassFile, {group_administrators,GroupAdministratorsRaw}),
 %   [{group_administrators, GroupAdministratorsRaw }] = dhelper:find_class(ClassFile ,group_administrators ),
 
-%'{"classes":[{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}},{"name":"arithmetic","type":"symmetric","genePool":["&","\/","-","%","*","|","+","^"]},{"name":"bitwise","type":"symmetric","genePool":[">>","<<"]},{"name":"typeCasting","type":"symmetric","genePool":["boolean","integer","double","object","string"]},{"name":"logical","type":"symmetric","genePool":["&&","||","and","or","xor"]},{"name":"incrementing","type":"symmetric","genePool":["++","--"]},{"name":"comparisson","type":"symmetric","genePool":["==",">=","===","!=","!==","<="]},{"name":"accessControl","type":"symmetric","genePool":["public","private","protected"]},{"name":"bitwiseAssignment","type":"symmetric","pool":["<<=",">>=","^="]},{"name":"assignment","type":"symmetric","pool":["&=",".=","\/=","-=","%=","*=","|=","+="]}],"tokens":[{"class":"inmutable","value":"<?php ","info":1},{"class":"inmutable","value":"$a","info":1} 
-%,{"class":"assignment","value":"=","info":0},{"class":"inmutable","value":"1","info":1},{"class":"inmutable","value":";","info":0},{"class":"inmutable","value":"$a","info":1},{"class":"assignment","value":"=","info":0},{"class":"inmutable","value":"$a","info":1},{"class":"arithmetic","value":"+","info":0},{"class":"inmutable","value":"1","info":1},{"class":"inmutable","value":";","info":0}]}';
+%'{"classes":[{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}},{"name":"arithmetic","type":"symmetric","genePool":["&","\/","-","%","*","|","+","^"]},{"name":"bitwise","type":"symmetric","genePool":[">>","<<"]},{"name":"typeCasting","type":"symmetric","genePool":["boolean","integer","double","object","string"]},{"name":"logical","type":"symmetric","genePool":["&&","||","and","or","xor"]},{"name":"incrementing","type":"symmetric","genePool":["++","--"]},{"name":"comparisson","type":"symmetric","genePool":["==",">=","===","!=","!==","<="]},{"name":"accessControl","type":"symmetric","genePool":["public","private","protected"]},{"name":"bitwiseAssignment","type":"symmetric","pool":["<<=",">>=","^="]},{"name":"assignment","type":"symmetric","pool":["&=",".=","\/=","-=","%=","*=","|=","+="]}],"tokens":[{"class":"string","value":"<?php ","info":1},{"class":"string","value":"$a","info":1} 
+%,{"class":"assignment","value":"=","info":0},{"class":"string","value":"1","info":1},{"class":"string","value":";","info":0},{"class":"string","value":"$a","info":1},{"class":"assignment","value":"=","info":0},{"class":"string","value":"$a","info":1},{"class":"arithmetic","value":"+","info":0},{"class":"string","value":"1","info":1},{"class":"string","value":";","info":0}]}';
  
 
 %{"classes":[{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}}
- 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 find_class_test() ->
   ClassEts = helper:prepare(classes),
   helper:load_classes(ClassEts, fixtureGiveMeManyClasses()),
-  ClassItem = helper:find_class(ClassEts,<<"clone">>),
-  ?_assert(fixtureGiveMeCloneClass() =:= ClassItem).
+  [{<<"clone">>,ClassItem}] = helper:find_class(ClassEts,<<"clone">>),
+  ?assert(ClassItem =:= fixtureGiveMeCloneClass()).
 
   
 load_one_class_test() ->
   ClassEts = helper:prepare(classes),
   helper:load_one_class(ClassEts,fixtureGiveMeCloneClass()),
   [{<<"clone">>,ClassItem}] = helper:find_class(ClassEts,<<"clone">>),
-  ?_assert(fixtureGiveMeCloneClass() =:= ClassItem).
+  ?assert(fixtureGiveMeCloneClass() =:= ClassItem).
 
 load_classes_test() ->
   ClassEts = helper:prepare(classes),
   helper:load_classes(ClassEts, fixtureGiveMeManyClasses()),
   [{<<"clone">>,ClassItem1}] = helper:find_class(ClassEts,<<"clone">>),
-  ?_assert(fixtureGiveMeCloneClass() =:= ClassItem1),
+  ?assert(fixtureGiveMeCloneClass() =:= ClassItem1),
   [{<<"accessControl">>,ClassItem2}] = helper:find_class(ClassEts,<<"accessControl">>),
-  ?_assert(fixtureGiveMeAccessControlClass() =:= ClassItem2).
+  ?assert(fixtureGiveMeAccessControlClass() =:= ClassItem2).
 
   
 load_classes_empty_test() ->
   ClassEts = helper:prepare(classes),
   helper:load_classes(ClassEts,[]),
-  ?_assert(helper:find_class(ClassEts,<<"key">>) =:= []). 
+  ?assert(helper:find_class(ClassEts,<<"key">>) =:= []). 
   
-  
-readlines_test_() ->
-   [
-    ?_assertException(error, _,helper:readlines("test/void.json")),
-    ?_assert(helper:readlines("test/simple.json")=:="[{\"key1\":\"value1\"},{\"key2\":\"value2\"}]")
-   ].
-   
+% % % readlines_test_() ->
+% % %     ?assert(helper:readlines("test/simple.json")=:="[{\"key1\":\"value1\"},{\"key2\":\"value2\"}]").
+% % 
+% % 
+% % % readlines_fail_test_() ->
+% % %   ?assertException(error, _,helper:readlines("test/void.json")).
 
-% borrable
+
+% 
+% % borrable
 read_test() ->
    Buffer = helper:read("[1,3.14,{\"key\":\"value\"}]"),
-   ?_assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]).%,
+   ?assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]).%,
    %Buffer2 = read("\"classes\":[{\"name\":\"clone\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"clone\",\"genePool\":[\"=\"]}},{\"name\":\"flow\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"exit\",\"genePool\":[\"\"]}}").
+% 
+
+% {<<"string">>,<<"inmutable">>,
+%  {[{<<"class">>,<<"string">>},
+%    {<<"value">>,<<"<?php ">>},
+%    {<<"info">>,1}]},
+%  {[{<<"name">>,<<"string">>},
+%    {<<"type">>,<<"inmutable">>},
+%    {<<"genes">>,
+%     {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}}]}}
+
+classify_token_test() ->
+  ClassEts = helper:prepare(classes),
+  helper:load_classes(ClassEts, fixtureGiveMeManyClasses()),
+  Token = fixtureGiveMeOneInmutableToken(),
+  Class = fixtureGiveMeStringClass(),
+  ?assert({<<"string">>,<<"inmutable">>,Token,Class} =:= helper:classify_token(ClassEts,Token)).
+
+mutate_empty_token_test() ->
+   ?assert([] =:= helper:mutate([],fixtureGiveMeStringClass())).
+
+mutate_one_inmutable_token_test() ->
+   ?assert([<<"<?php ">>] =:= helper:mutate(fixtureGiveMeOneInmutableToken(),fixtureGiveMeStringClass())).
+
+mutate_another_inmutable_token_test() ->
+   ?assert([<<"$a">>] =:= helper:mutate(fixtureGiveMeAnotherInmutableToken(),fixtureGiveMeStringClass())).
    
-% THIS IS THE REALITY...   
-% {[{<<"classes">>,Classes},_]}=json_eep:json_to_term(helper:readlines("test/code.json")).
+% mutate_one_mutable_asymetric_token_test() ->
+%     ?assert([<<"=">>] =:= helper:mutate(fixtureGiveMeAnotherInmutableToken(),fixtureGiveMeCloneClass())).
+
 
 fixtureGiveMeCloneClass() ->
 {[
@@ -97,9 +125,17 @@ fixtureGiveMeAccessControlClass() ->
    {<<"genePool">>,
     [<<"public">>,<<"private">>,<<"protected">>]}]}.
 
+fixtureGiveMeStringClass() ->
+{[{<<"name">>,<<"string">>},
+   {<<"type">>,<<"inmutable">>}
+   ]}.
 
+    
 fixtureGiveMeManyClasses() ->
-[{[{<<"name">>,<<"clone">>},
+[{[{<<"name">>,<<"string">>},
+   {<<"type">>,<<"inmutable">>}
+   ]},
+ {[{<<"name">>,<<"clone">>},
    {<<"type">>,<<"asymmetric">>},
    {<<"genes">>,
     {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}}]},
@@ -145,43 +181,53 @@ fixtureGiveMeManyClasses() ->
      <<"|=">>,<<"+=">>]}]}].
 
      
-fixtureGiveMeOneToken() ->
-{[{<<"class">>,<<"inmutable">>},
+fixtureGiveMeOneInmutableToken() ->
+{[{<<"class">>,<<"string">>},
    {<<"value">>,<<"<?php ">>},
    {<<"info">>,1}]}.
-     
+
+fixtureGiveMeAnotherInmutableToken() ->
+{[{<<"class">>,<<"string">>},
+   {<<"value">>,<<"$a">>},
+   {<<"info">>,1}]}.
+
+fixtureGiveMeOneCloneToken() ->
+{[{<<"class">>,<<"clone">>},
+   {<<"value">>,<<"clone">>},
+   {<<"info">>,1}]}.
+
 fixtureGiveMeManyTokens() ->
-[{[{<<"class">>,<<"inmutable">>},
+[{[{<<"class">>,<<"string">>},
    {<<"value">>,<<"<?php ">>},
    {<<"info">>,1}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<"$a">>},
    {<<"info">>,1}]},
  {[{<<"class">>,<<"assignment">>},
    {<<"value">>,<<"=">>},
    {<<"info">>,0}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<"1">>},
    {<<"info">>,1}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<";">>},
    {<<"info">>,0}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<"$a">>},
    {<<"info">>,1}]},
  {[{<<"class">>,<<"assignment">>},
    {<<"value">>,<<"=">>},
    {<<"info">>,0}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<"$a">>},
    {<<"info">>,1}]},
  {[{<<"class">>,<<"arithmetic">>},
    {<<"value">>,<<"+">>},
    {<<"info">>,0}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<"1">>},
    {<<"info">>,1}]},
- {[{<<"class">>,<<"inmutable">>},
+ {[{<<"class">>,<<"string">>},
    {<<"value">>,<<";">>},
    {<<"info">>,0}]}].
    
