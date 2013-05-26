@@ -25,7 +25,7 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
 mutate({ ClassName, <<"inmutable">>, Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , Class}) ->
    [Value];
 mutate({
-       ClassName, <<"asymmetric">>, 
+       ClassName,<<"asymmetric">>, 
        Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
        Class={[
          {<<"name">>,ClassName},
@@ -33,14 +33,18 @@ mutate({
          {<<"genes">>,Genes}
        ]}
    }) ->
-  find_gen(Value,Genes).
+  find_gen(Value,Genes,<<"asymmetric">> ).
 
-find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}])->
+  %% symetric - > Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>
+
+find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}], <<"symmetric">>)->
+  lists:delete(Value,GenePool);
+find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}], <<"asymmetric">>)->
   GenePool;
-find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}|_TheRest])->
+find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}|_TheRest],<<"asymmetric">>)->
   GenePool;
-find_gen(Value1, [{[{<<"gene">>,Value2},_]}| TheRest ]) when Value1 =/= Value2 ->
-    find_gen(Value1,TheRest).
+find_gen(Value1, [{[{<<"gene">>,Value2},_]}| TheRest ],Type) when Value1 =/= Value2 ->
+    find_gen(Value1,TheRest,Type).
   
 load_one_class(Ets,Class={[{<<"name">>,Name}|_]}) ->
   ets:insert(Ets, {Name,Class}).

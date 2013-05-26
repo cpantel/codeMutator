@@ -77,21 +77,39 @@ mutate_another_asymmetric_token_test() ->
 % mutate_one_symmetric_token_test() ->
 %     Token = fixtureGiveMeAssignmentToken(),
 %     Class = fixtureGiveMeAssignmentClass(),
-%     ?assert([<<"=">>] =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
-%     
-%    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,
-%      <<"|=">>,<<"+=">>] 
+%     Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
+%     ?assert(Expected =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
+    
+   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-find_gen_test() ->
+find_gen_asymmetric_test() ->
     Genes = fixtureGiveMeCloneGenes(),
-    Gen = helper:find_gen(<<"clone">>,Genes),
+    Gen = helper:find_gen(<<"clone">>,Genes, <<"asymmetric">>),
     Expected = [<<"=">>],
     ?assert(Expected =:= Gen).
 
-find_another_gen_test() ->
+find_another_gen_asymmetric_test() ->
     Genes = fixtureGiveMeFlowGenes(),
-    Gen = helper:find_gen(<<"exit">>,Genes),
+    Gen = helper:find_gen(<<"exit">>,Genes, <<"asymmetric">>),
     Expected = [<<"">>],
+    ?assert(Expected =:= Gen).
+    
+find_gen_symmetric_test() ->
+    Genes = fixtureGiveMeAssignmentGenes(),
+    Gen = helper:find_gen(<<"=">>,[{[{<<"gene">>,<<"=">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
+    Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
+    ?assert(Expected =:= Gen).
+    
+find_gen_another_symmetric_test() ->
+    Genes = fixtureGiveMeAssignmentGenes(),
+    Gen = helper:find_gen(<<"&=">>,[{[{<<"gene">>,<<"&=">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
+    Expected = [<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
+    ?assert(Expected =:= Gen).
+    
+find_gen_symmetric_another_class_test() ->
+    Genes = fixtureGiveMeAccessControlGenes(),
+    Gen = helper:find_gen(<<"private">>,[{[{<<"gene">>,<<"private">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
+    Expected = [<<"public">>,<<"protected">>],
     ?assert(Expected =:= Gen).
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,6 +122,22 @@ read_file_test_() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                 GEN FIXTURES 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+fixtureGiveMeAccessControlGenes() ->
+{[
+  {<<"name">>,<<"accessControl">>},
+  {<<"type">>,<<"symmetric">>},
+  {<<"genePool">>,Genes}
+ ]} = fixtureGiveMeAccessControlClass(),
+   Genes.
+
+fixtureGiveMeAssignmentGenes() ->
+{[
+  {<<"name">>,<<"assignment">>},
+  {<<"type">>,<<"symmetric">>},
+  {<<"genePool">>,Genes}
+ ]} = fixtureGiveMeAssignmentClass(),
+   Genes.
+
 fixtureGiveMeCloneGenes() ->
 {[
   {<<"name">>,<<"clone">>},
