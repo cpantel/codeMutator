@@ -74,11 +74,11 @@ mutate_another_asymmetric_token_test() ->
     Class = fixtureGiveMeFlowClass(),
     ?assert([<<"">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
 
-% mutate_one_symmetric_token_test() ->
-%     Token = fixtureGiveMeAssignmentToken(),
-%     Class = fixtureGiveMeAssignmentClass(),
-%     Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
-%     ?assert(Expected =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
+mutate_one_symmetric_token_test() ->
+    Token = fixtureGiveMeAssignmentToken(),
+    Class = fixtureGiveMeAssignmentClass(),
+    Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
+    ?assert(Expected =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
     
    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
