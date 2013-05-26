@@ -12,6 +12,12 @@ lookup_class_test() ->
   [{<<"clone">>,ClassItem}] = helper:lookup_class(ClassMap,<<"clone">>),
   ?assert(ClassItem =:= fixtureGiveMeCloneClass()).
 
+lookup_class_unknown_test() ->
+  ClassMap = helper:prepare(classes),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  ?assert([] =:= helper:lookup_class(ClassMap,<<"xxxx">>)).
+  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load_one_class_test() ->
   ClassMap = helper:prepare(classes),
@@ -57,6 +63,11 @@ classify_token_test() ->
      ?assert({<<"assignment">>,<<"symmetric">>,SymmetricToken,SymmetricClass} =:= helper:classify_token(ClassMap,SymmetricToken))
   ].
 
+classify_token_notoken_test() ->
+  ClassMap = helper:prepare(classes),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  ?_assertException(error, _,helper:classify_token(ClassMap,[])).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mutate_one_string_token_test() ->
     Token = fixtureGiveMeOneStringToken(),
@@ -84,7 +95,16 @@ mutate_one_symmetric_token_test() ->
     Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
     ?assert(Expected =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
     
+mutate_bad_string_type_token_test() ->
+    Token = fixtureGiveMeOneStringToken(),
+    Class = fixtureGiveMeStringClass(),
+    ?_assertException(error, _,helper:mutate({<<"string">>,<<"symmetric">>,Token,Class})).
    
+mutate_bad_clone_type_token_test() ->
+    Token = fixtureGiveMeCloneToken(),
+    Class = fixtureGiveMeCloneClass(),
+    ?_assertException(error, _,helper:mutate({<<"clone">>,<<"asymmetric">>,Token,Class})).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 find_gen_asymmetric_test() ->
     Genes = fixtureGiveMeCloneGenes(),
@@ -115,7 +135,8 @@ find_gen_symmetric_another_class_test() ->
     Gen = helper:find_gen(<<"private">>,[{[{<<"gene">>,<<"private">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
     Expected = [<<"public">>,<<"protected">>],
     ?assert(Expected =:= Gen).
-    
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 read_file_fail_test_() ->
   ?_assertException(error, _,helper:read_file("test/void.json")).
