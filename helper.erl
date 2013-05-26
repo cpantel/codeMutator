@@ -76,32 +76,13 @@ mutate({
   [<<"=">>]. %TODO UNHARDCODE
   %find_genes(Value,Genes).
 
-  
-% [
-%  {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<>>]}]},
-%  {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<>>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-%  {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<>>,<<"break">>,<<"continue">>,<<"exit">>]}]},
-%  {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<>>,<<"break">>,<<"exit">>,<<"return">>]}]}
-% ]
-% 
-% [
-%  {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}
-% ]
-%  
-
-
-% [{[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<>>]}]},
-%  {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<>>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-%  {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<>>,<<"break">>,<<"continue">>,<<"exit">>]}]},
-%  {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<>>,<<"break">>,<<"exit">>,<<"retu"...>>]}]}
-% ]
-%    
-%                   {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<>>]}]} 
-                  
-find_gen(Value1, [{[{<<"gene">>,Value2},    {_GenPool             }]}| TheRest]) when Value1 =/= Value2 ->
-    find_gen(Value1,TheRest);
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}])->
-    GenePool.
+  GenePool;
+find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}|_TheRest])->
+  GenePool;
+   
+find_gen(Value1, [{[{<<"gene">>,Value2},_]}| TheRest ]) when Value1 =/= Value2 ->
+    find_gen(Value1,TheRest).
   
  
   
