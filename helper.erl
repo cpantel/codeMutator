@@ -1,7 +1,7 @@
 -module(helper).
 -export([
   prepare/1,
-  mutate/1,
+  mutate_token/1,
   read_file/1
   ]).
 
@@ -10,7 +10,7 @@
 % para cada token
 %    classify_token
 %    find_gen
-%    mutate
+%    mutate_token
 
 
 %   statistics(runtime),
@@ -21,10 +21,18 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
   {[{<<"name">>,TokenClass},{<<"type">>,Type},_]}=ClassItem,
   {TokenClass,Type,Token,ClassItem}.
 
+% mutate(ClassMap, [], Accum) ->
+% 
+% mutate(ClassMap, [Mutations | TheRest], Accum) ->
+% 
+% accumulate every single token
+% when a list of tokens is found, fire a single mutation for every one
+
+
    
-mutate({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},_Info]} , _Class}) ->
-   [Value];
-mutate({
+mutate_token({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},_Info]} , _Class}) ->
+   {Value,[]};
+mutate_token({
        ClassName,<<"asymmetric">>, 
        _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
        _Class={[
@@ -33,8 +41,8 @@ mutate({
          {<<"genes">>,Genes}
        ]}
    }) ->
-  find_gen(Value,Genes,<<"asymmetric">> );
-mutate({
+  {Value,find_gen(Value,Genes,<<"asymmetric">> )};
+mutate_token({
        ClassName,<<"symmetric">>, 
        _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
        _Class={[
@@ -43,7 +51,7 @@ mutate({
          {<<"genePool">>,Genes}
        ]}
    }) ->
-  find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>).
+  {Value,find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>)}.
 
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}], <<"symmetric">>)->
   lists:delete(Value,GenePool);

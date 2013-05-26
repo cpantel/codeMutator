@@ -69,41 +69,41 @@ classify_token_notoken_test() ->
   ?_assertException(error, _,helper:classify_token(ClassMap,[])).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-mutate_one_string_token_test() ->
+mutate_token_one_string_test() ->
     Token = fixtureGiveMeOneStringToken(),
     Class = fixtureGiveMeStringClass(),
-    ?assert([<<"<?php ">>] =:= helper:mutate({<<"string">>,<<"inmutable">>,Token,Class})).
+    ?assert({<<"<?php ">>,[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
  
-mutate_another_inmutable_token_test() ->
+mutate_token_another_inmutable_test() ->
     Token = fixtureGiveMeAnotherStringToken(),
     Class = fixtureGiveMeStringClass(),
-    ?assert([<<"$a">>] =:= helper:mutate({<<"string">>,<<"inmutable">>,Token,Class})).
+    ?assert({<<"$a">>,[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
 
-mutate_one_asymmetric_token_test() ->
+mutate_token_one_asymmetric_test() ->
     Token = fixtureGiveMeCloneToken(),
     Class = fixtureGiveMeCloneClass(),
-    ?assert([<<"=">>] =:= helper:mutate({<<"clone">>,<<"asymmetric">>,Token,Class})).
+    ?assert({<<"clone">>,[<<"=">>]} =:= helper:mutate_token({<<"clone">>,<<"asymmetric">>,Token,Class})).
     
-mutate_another_asymmetric_token_test() ->
+mutate_token_another_asymmetric_test() ->
     Token = fixtureGiveMeExitToken(),
     Class = fixtureGiveMeFlowClass(),
-    ?assert([<<"">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
+    ?assert({<<"exit">>,[<<"">>]} =:= helper:mutate_token({<<"flow">>,<<"asymmetric">>,Token,Class})).
 
-mutate_one_symmetric_token_test() ->
+mutate_token_one_symmetric_test() ->
     Token = fixtureGiveMeAssignmentToken(),
     Class = fixtureGiveMeAssignmentClass(),
-    Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
-    ?assert(Expected =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
+    Expected = {<<"=">>,[<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>]},
+    ?assert(Expected =:= helper:mutate_token({<<"assignment">>,<<"symmetric">>,Token,Class})).
     
-mutate_bad_string_type_token_test() ->
+mutate_token_bad_string_type_test() ->
     Token = fixtureGiveMeOneStringToken(),
     Class = fixtureGiveMeStringClass(),
-    ?_assertException(error, _,helper:mutate({<<"string">>,<<"symmetric">>,Token,Class})).
+    ?_assertException(error, _,helper:mutate_token({<<"string">>,<<"symmetric">>,Token,Class})).
    
-mutate_bad_clone_type_token_test() ->
+mutate_token_bad_clone_type_test() ->
     Token = fixtureGiveMeCloneToken(),
     Class = fixtureGiveMeCloneClass(),
-    ?_assertException(error, _,helper:mutate({<<"clone">>,<<"asymmetric">>,Token,Class})).
+    ?_assertException(error, _,helper:mutate_token({<<"clone">>,<<"asymmetric">>,Token,Class})).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 find_gen_asymmetric_test() ->
@@ -239,10 +239,14 @@ fixtureGiveMeAllClasses() ->
  {[{<<"name">>,<<"flow">>},
    {<<"type">>,<<"asymmetric">>},
    {<<"genes">>,[
-      {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-      {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]},
-      {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<"">>]}]},
-      {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]}
+      {[{<<"gene">>,<<"break">>},
+        {<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
+      {[{<<"gene">>,<<"continue">>},
+        {<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]},
+      {[{<<"gene">>,<<"exit">>},
+        {<<"genePool">>,[<<"">>]}]},
+      {[{<<"gene">>,<<"return">>},
+        {<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]}
     ]
    }
   ]},
@@ -312,6 +316,32 @@ fixtureGiveMeAssignmentToken()->
    {<<"value">>,<<"=">>},
    {<<"info">>,0}]}.
    
+fixtureGiveMeCloneProgram() ->
+[{[{<<"class">>,<<"string">>},
+   {<<"value">>,<<"<?php ">>},
+   {<<"info">>,1}]},
+ {[{<<"class">>,<<"string">>},
+   {<<"value">>,<<"$a">>},
+   {<<"info">>,1}]},
+ {[{<<"class">>,<<"assignment">>},
+   {<<"value">>,<<"=">>},
+   {<<"info">>,0}]},
+ {[{<<"class">>,<<"clone">>},
+   {<<"value">>,<<"clone">>},
+   {<<"info">>,1}]},
+ {[{<<"class">>,<<"string">>},
+   {<<"value">>,<<"(">>},
+   {<<"info">>,0}]},
+ {[{<<"class">>,<<"string">>},
+   {<<"value">>,<<"$b">>},
+   {<<"info">>,1}]},
+ {[{<<"class">>,<<"string">>},
+   {<<"value">>,<<")">>},
+   {<<"info">>,0}]},
+ {[{<<"class">>,<<"string">>},
+   {<<"value">>,<<";">>},
+   {<<"info">>,0}]}].
+
    
 fixtureGiveMeManyTokens() ->
 [{[{<<"class">>,<<"string">>},
