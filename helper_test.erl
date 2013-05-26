@@ -109,9 +109,17 @@ mutate_one_symmetric_token_test() ->
 % % %     Class = fixtureGiveMeFlowClass(),
 % % %     ?assert([<<"=">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
 
-% % find_gen_test() ->
-% %    Genes = fixtureGiveMeCloneGenes(),
-% %    Gen = helper:find_gen(<<"clone">>,Genes).
+find_gen_test() ->
+    Genes = fixtureGiveMeCloneGenes(),
+    Gen = helper:find_gen(<<"clone">>,Genes),
+    Expected = [<<"=">>],
+    ?assert(Expected =:= Gen).
+
+find_another_gen_test() ->
+    Genes = fixtureGiveMeFlowGenes(),
+    Gen = helper:find_gen(<<"exit">>,Genes),
+    Expected = [<<"">>],
+    ?assert(Expected =:= Gen).
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                 CLASS FIXTURES 
@@ -120,15 +128,18 @@ fixtureGiveMeCloneGenes() ->
 {[
   {<<"name">>,<<"clone">>},
   {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,{Genes}}
+  {<<"genes">>,Genes}
   ]} = fixtureGiveMeCloneClass(),
    Genes.
 
+
+   
+   
 fixtureGiveMeFlowGenes() ->
 {[
   {<<"name">>,<<"flow">>},
   {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,{Genes}}
+  {<<"genes">>,Genes}
  ]} = fixtureGiveMeFlowClass(),
    Genes.
 
@@ -155,19 +166,19 @@ fixtureGiveMeCloneClass() ->
   {<<"name">>,<<"clone">>},
   {<<"type">>,<<"asymmetric">>},
   {<<"genes">>,
-    {[{<<"gene">>,<<"clone">>}, {<<"genePool">>,[<<"=">>]}]}
+    [{[{<<"gene">>,<<"clone">>}, {<<"genePool">>,[<<"=">>]}]}]
   }]}.
 
 fixtureGiveMeFlowClass() ->
 {[
   {<<"name">>,<<"flow">>},
   {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,
+  {<<"genes">>,[
     {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<"">>]}]},
     {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
     {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]},
     {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]}
-  }]}.
+  ]}]}.
 
 fixtureGiveMeAccessControlClass() ->
 {[{<<"name">>,<<"accessControl">>},
