@@ -22,20 +22,28 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
   {TokenClass,Type,Token,ClassItem}.
 
    
-mutate({ ClassName, <<"inmutable">>, Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , Class}) ->
+mutate({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},_Info]} , _Class}) ->
    [Value];
 mutate({
        ClassName,<<"asymmetric">>, 
-       Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
-       Class={[
+       _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
+       _Class={[
          {<<"name">>,ClassName},
          {<<"type">>,<<"asymmetric">>},
          {<<"genes">>,Genes}
        ]}
    }) ->
-  find_gen(Value,Genes,<<"asymmetric">> ).
-
-  %% symetric - > Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>
+  find_gen(Value,Genes,<<"asymmetric">> );
+mutate({
+       ClassName,<<"symmetric">>, 
+       _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
+       _Class={[
+         {<<"name">>,ClassName},
+         {<<"type">>,<<"symmetric">>},
+         {<<"genePool">>,Genes}
+       ]}
+   }) ->
+  find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>).
 
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}], <<"symmetric">>)->
   lists:delete(Value,GenePool);
