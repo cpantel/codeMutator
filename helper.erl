@@ -57,10 +57,12 @@
 %mutate({[]},{[{<<"name">>,<<"string">>},{<<"type">>,<<"inmutable">>}]})
 %mutate({[]},{[{<<"name">>,<<"string">>},{<<"type">>,<<"inmutable">>}]})
 
-
+%{[{<<"name">>,TokenClass},{<<"type">>,Type},_]}
+  
 classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
-  [{<<"string">>,ClassItem}]=lookup_class(ClassMap,<<"string">>),
-  {<<"string">>,<<"inmutable">>,Token,ClassItem}.
+  [{TokenClass,ClassItem}]=lookup_class(ClassMap,TokenClass),
+  {[{<<"name">>,TokenClass},{<<"type">>,Type},_]}=ClassItem,
+  {TokenClass,Type,Token,ClassItem}.
 
         
 mutate({ ClassName, <<"inmutable">>, Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , Class}) ->
@@ -81,7 +83,6 @@ find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}])->
   GenePool;
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}|_TheRest])->
   GenePool;
-   
 find_gen(Value1, [{[{<<"gene">>,Value2},_]}| TheRest ]) when Value1 =/= Value2 ->
     find_gen(Value1,TheRest).
   

@@ -1,47 +1,24 @@
 -module(helper_test).
 -include_lib("eunit/include/eunit.hrl").
 
-%abrir dets
-%cargar dets con clases
-%mutar tokens(
-
-
 %   statistics(runtime),
 %   statistics(wall_clock),
 
-
-% mutate_test() ->
-%    [{Classes,_},{Tokens,_}] = mutate("test/oneline.json"),
-%    ?assert(Classes =:= "classes"),
-%    ?assert(Tokens =:= "tokens").
-
-%load_classes_test()->
-%  TestClasses = epp_json_to_term(...),
-%  load_classes(TestClasses),
-%  [{...}] = dhelper:lookup_class(ClassFile, "comparisson")
-% it shoud take the full json taken from the file and load the classes in   
-% 
-%
-
-%'{"classes":[{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}},{"name":"arithmetic","type":"symmetric","genePool":["&","\/","-","%","*","|","+","^"]},{"name":"bitwise","type":"symmetric","genePool":[">>","<<"]},{"name":"typeCasting","type":"symmetric","genePool":["boolean","integer","double","object","string"]},{"name":"logical","type":"symmetric","genePool":["&&","||","and","or","xor"]},{"name":"incrementing","type":"symmetric","genePool":["++","--"]},{"name":"comparisson","type":"symmetric","genePool":["==",">=","===","!=","!==","<="]},{"name":"accessControl","type":"symmetric","genePool":["public","private","protected"]},{"name":"bitwiseAssignment","type":"symmetric","pool":["<<=",">>=","^="]},{"name":"assignment","type":"symmetric","pool":["&=",".=","\/=","-=","%=","*=","|=","+="]}],"tokens":[{"class":"string","value":"<?php ","info":1},{"class":"string","value":"$a","info":1} 
-%,{"class":"assignment","value":"=","info":0},{"class":"string","value":"1","info":1},{"class":"string","value":";","info":0},{"class":"string","value":"$a","info":1},{"class":"assignment","value":"=","info":0},{"class":"string","value":"$a","info":1},{"class":"arithmetic","value":"+","info":0},{"class":"string","value":"1","info":1},{"class":"string","value":";","info":0}]}';
- 
-
-%{"classes":[{"name":"clone","type":"asymmetric","genes":{"gene":"clone","genePool":["="]}},{"name":"flow","type":"asymmetric","genes":{"gene":"exit","genePool":[""]}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 lookup_class_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
   [{<<"clone">>,ClassItem}] = helper:lookup_class(ClassMap,<<"clone">>),
   ?assert(ClassItem =:= fixtureGiveMeCloneClass()).
 
-  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load_one_class_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_one_class(ClassMap,fixtureGiveMeCloneClass()),
   [{<<"clone">>,ClassItem}] = helper:lookup_class(ClassMap,<<"clone">>),
   ?assert(fixtureGiveMeCloneClass() =:= ClassItem).
 
+  
 load_classes_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
@@ -55,7 +32,8 @@ load_classes_empty_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_classes(ClassMap,[]),
   ?assert(helper:lookup_class(ClassMap,<<"key">>) =:= []). 
-  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % % readlines_test_() ->
 % % %     ?assert(helper:readlines("test/simple.json")=:="[{\"key1\":\"value1\"},{\"key2\":\"value2\"}]").
 % % 
@@ -63,7 +41,7 @@ load_classes_empty_test() ->
 % % % readlines_fail_test_() ->
 % % %   ?assertException(error, _,helper:readlines("test/void.json")).
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 % % borrable
 read_test() ->
@@ -80,7 +58,7 @@ read_test() ->
 %    {<<"type">>,<<"inmutable">>},
 %    {<<"genes">>,
 %     {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}}]}}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classify_token_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
@@ -91,12 +69,12 @@ classify_token_test() ->
   SymmetricToken = fixtureGiveMeAssignmentToken(),
   SymmetricClass =fixtureGiveMeAssignmentClass(),
   [
-     ?assert({<<"string">>,<<"inmutable">>,InmutableToken,InmutableClass} =:= helper:classify_token(ClassMap,InmutableToken))
-     %?assert({<<"clone">>,<<"asymmetric">>,AsymmetricToken,AsymmetricClass} =:= helper:classify_token(ClassMap,AsymmetricToken))
-     ,?assert({<<"accessControl">>,<<"symmetric">>,SymmetricToken,SymmetricClass} =:= helper:classify_token(ClassMap,SymmetricToken))
+     ?assert({<<"string">>,<<"inmutable">>,InmutableToken,InmutableClass} =:= helper:classify_token(ClassMap,InmutableToken)),
+     ?assert({<<"clone">>,<<"asymmetric">>,AsymmetricToken,AsymmetricClass} =:= helper:classify_token(ClassMap,AsymmetricToken)),
+     ?assert({<<"assignment">>,<<"symmetric">>,SymmetricToken,SymmetricClass} =:= helper:classify_token(ClassMap,SymmetricToken))
   ].
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mutate_one_string_token_test() ->
     Token = fixtureGiveMeOneStringToken(),
     Class = fixtureGiveMeStringClass(),
@@ -116,7 +94,7 @@ mutate_one_asymmetric_token_test() ->
 %     Token = fixtureGiveMeFlowToken(),
 %     Class = fixtureGiveMeFlowClass(),
 %     ?assert([<<"=">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 find_gen_test() ->
     Genes = fixtureGiveMeCloneGenes(),
     Gen = helper:find_gen(<<"clone">>,Genes),
@@ -130,7 +108,7 @@ find_another_gen_test() ->
     ?assert(Expected =:= Gen).
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                 CLASS FIXTURES 
+%%%                 GEN FIXTURES 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fixtureGiveMeCloneGenes() ->
 {[
@@ -164,10 +142,14 @@ fixtureGiveMeFlowClass() ->
   {<<"name">>,<<"flow">>},
   {<<"type">>,<<"asymmetric">>},
   {<<"genes">>,[
-    {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<"">>]}]},
-    {[{<<"gene">>,<<"break">>},{<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-    {[{<<"gene">>,<<"return">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]},
-    {[{<<"gene">>,<<"continue">>},{<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]}
+    {[{<<"gene">>,<<"exit">>},
+      {<<"genePool">>,[<<"">>]}]},
+    {[{<<"gene">>,<<"break">>},
+      {<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
+    {[{<<"gene">>,<<"return">>},
+      {<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]},
+    {[{<<"gene">>,<<"continue">>},
+      {<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]}
   ]}]}.
 
 fixtureGiveMeAccessControlClass() ->
@@ -178,17 +160,21 @@ fixtureGiveMeAccessControlClass() ->
 
 fixtureGiveMeStringClass() ->
 {[{<<"name">>,<<"string">>},
-   {<<"type">>,<<"inmutable">>}
+   {<<"type">>,<<"inmutable">>},
+   {<<"genes">>,[]}
    ]}.
 
 fixtureGiveMeAssignmentClass() ->
- {[{<<"class">>,<<"assignment">>},
-   {<<"value">>,<<"=">>},
-   {<<"info">>,0}]}.
-   
+{[{<<"name">>,<<"assignment">>},
+   {<<"type">>,<<"symmetric">>},
+   {<<"genePool">>,
+    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,
+     <<"|=">>,<<"+=">>]}]}.
+     
 fixtureGiveMeAllClasses() ->
 [{[{<<"name">>,<<"string">>},
-   {<<"type">>,<<"inmutable">>}
+   {<<"type">>,<<"inmutable">>},
+   {<<"genes">>,[]}
    ]},
  {[{<<"name">>,<<"clone">>},
    {<<"type">>,<<"asymmetric">>},
@@ -197,7 +183,6 @@ fixtureGiveMeAllClasses() ->
     ]
    }
   ]},
-    
  {[{<<"name">>,<<"flow">>},
    {<<"type">>,<<"asymmetric">>},
    {<<"genes">>,[

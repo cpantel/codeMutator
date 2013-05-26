@@ -14,6 +14,7 @@ class Tokenizer {
         array(
           'name'=>'string',
           'type'=>'inmutable',
+          'genes'=>array()
         ),
         array(
           'name'=>'clone',
