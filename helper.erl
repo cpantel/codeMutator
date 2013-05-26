@@ -8,8 +8,9 @@
 %abrir dets
 %cargar dets con clases
 % para cada token
-%    obtener clases
-%    mutar token
+%    classify_token
+%    find_gen
+%    mutate
 
 
 %   statistics(runtime),

@@ -31,7 +31,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 lookup_class_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeManyClasses()),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
   [{<<"clone">>,ClassItem}] = helper:lookup_class(ClassMap,<<"clone">>),
   ?assert(ClassItem =:= fixtureGiveMeCloneClass()).
 
@@ -44,7 +44,7 @@ load_one_class_test() ->
 
 load_classes_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeManyClasses()),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
   [{<<"clone">>,ClassItem1}] = helper:lookup_class(ClassMap,<<"clone">>),
   ?assert(fixtureGiveMeCloneClass() =:= ClassItem1),
   [{<<"accessControl">>,ClassItem2}] = helper:lookup_class(ClassMap,<<"accessControl">>),
@@ -83,10 +83,18 @@ read_test() ->
 
 classify_token_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeManyClasses()),
-  Token = fixtureGiveMeOneStringToken(),
-  Class = fixtureGiveMeStringClass(),
-  ?assert({<<"string">>,<<"inmutable">>,Token,Class} =:= helper:classify_token(ClassMap,Token)).
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  InmutableToken = fixtureGiveMeOneStringToken(),
+  InmutableClass = fixtureGiveMeStringClass(),
+  AsymmetricToken = fixtureGiveMeCloneToken(),
+  AsymmetricClass = fixtureGiveMeCloneClass(),
+  SymmetricToken = fixtureGiveMeAssignmentToken(),
+  SymmetricClass =fixtureGiveMeAssignmentClass(),
+  [
+     ?assert({<<"string">>,<<"inmutable">>,InmutableToken,InmutableClass} =:= helper:classify_token(ClassMap,InmutableToken))
+     %?assert({<<"clone">>,<<"asymmetric">>,AsymmetricToken,AsymmetricClass} =:= helper:classify_token(ClassMap,AsymmetricToken))
+     ,?assert({<<"accessControl">>,<<"symmetric">>,SymmetricToken,SymmetricClass} =:= helper:classify_token(ClassMap,SymmetricToken))
+  ].
 
 
 mutate_one_string_token_test() ->
@@ -99,15 +107,15 @@ mutate_another_inmutable_token_test() ->
     Class = fixtureGiveMeStringClass(),
     ?assert([<<"$a">>] =:= helper:mutate({<<"string">>,<<"inmutable">>,Token,Class})).
 
-mutate_one_symmetric_token_test() ->
+mutate_one_asymmetric_token_test() ->
     Token = fixtureGiveMeCloneToken(),
     Class = fixtureGiveMeCloneClass(),
     ?assert([<<"=">>] =:= helper:mutate({<<"clone">>,<<"asymmetric">>,Token,Class})).
     
-% % % mutate_another_symmetric_token_test() ->
-% % %     Token = fixtureGiveMeFlowToken(),
-% % %     Class = fixtureGiveMeFlowClass(),
-% % %     ?assert([<<"=">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
+% mutate_another_asymmetric_token_test() ->
+%     Token = fixtureGiveMeFlowToken(),
+%     Class = fixtureGiveMeFlowClass(),
+%     ?assert([<<"=">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
 
 find_gen_test() ->
     Genes = fixtureGiveMeCloneGenes(),
@@ -132,9 +140,6 @@ fixtureGiveMeCloneGenes() ->
   ]} = fixtureGiveMeCloneClass(),
    Genes.
 
-
-   
-   
 fixtureGiveMeFlowGenes() ->
 {[
   {<<"name">>,<<"flow">>},
@@ -143,21 +148,6 @@ fixtureGiveMeFlowGenes() ->
  ]} = fixtureGiveMeFlowClass(),
    Genes.
 
-   
-%                        {[{<<"name">>,<<"flow">>},
-%                       {<<"type">>,<<"asymmetric">>},
-%                       {<<"genes">>,
-%                        {[{<<"gene">>,<<"exit">>},{<<"genePool">>,[<<>>]}]},
-%                        {[{<<"gene">>,<<"break">>},
-%                          {<<"genePool">>,
-%                           [<<>>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-%                        {[{<<"gene">>,<<"return">>},
-%                          {<<"genePool">>,
-%                           [<<>>,<<"break">>,<<"continue">>,<<"exit">>]}]},
-%                        {[{<<"gene">>,<<"continue">>},
-%                          {<<"genePool">>,
-%                           [<<>>,<<"break">>,<<"exit">>,<<"return">>]}]}}]}
-   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                 CLASS FIXTURES 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,7 +181,12 @@ fixtureGiveMeStringClass() ->
    {<<"type">>,<<"inmutable">>}
    ]}.
 
-fixtureGiveMeManyClasses() ->
+fixtureGiveMeAssignmentClass() ->
+ {[{<<"class">>,<<"assignment">>},
+   {<<"value">>,<<"=">>},
+   {<<"info">>,0}]}.
+   
+fixtureGiveMeAllClasses() ->
 [{[{<<"name">>,<<"string">>},
    {<<"type">>,<<"inmutable">>}
    ]},
@@ -273,6 +268,12 @@ fixtureGiveMeFlowToken() ->
 {[{<<"class">>,<<"flow">>},
    {<<"value">>,<<"exit">>},
    {<<"info">>,1}]}.
+
+fixtureGiveMeAssignmentToken()->   
+ {[{<<"class">>,<<"assignment">>},
+   {<<"value">>,<<"=">>},
+   {<<"info">>,0}]}.
+   
    
 fixtureGiveMeManyTokens() ->
 [{[{<<"class">>,<<"string">>},
