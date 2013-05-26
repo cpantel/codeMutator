@@ -1,9 +1,6 @@
 -module(helper_test).
 -include_lib("eunit/include/eunit.hrl").
 
-%   statistics(runtime),
-%   statistics(wall_clock),
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 lookup_class_test() ->
   ClassMap = helper:prepare(classes),
@@ -34,30 +31,12 @@ load_classes_empty_test() ->
   ?assert(helper:lookup_class(ClassMap,<<"key">>) =:= []). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % % readlines_test_() ->
-% % %     ?assert(helper:readlines("test/simple.json")=:="[{\"key1\":\"value1\"},{\"key2\":\"value2\"}]").
-% % 
-% % 
-% % % readlines_fail_test_() ->
-% % %   ?assertException(error, _,helper:readlines("test/void.json")).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 % % borrable
 read_test() ->
    Buffer = helper:read("[1,3.14,{\"key\":\"value\"}]"),
    ?assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]).%,
-   %Buffer2 = read("\"classes\":[{\"name\":\"clone\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"clone\",\"genePool\":[\"=\"]}},{\"name\":\"flow\",\"type\":\"asymmetric\",\"genes\":{\"gene\":\"exit\",\"genePool\":[\"\"]}}").
-% 
 
-% {<<"string">>,<<"inmutable">>,
-%  {[{<<"class">>,<<"string">>},
-%    {<<"value">>,<<"<?php ">>},
-%    {<<"info">>,1}]},
-%  {[{<<"name">>,<<"string">>},
-%    {<<"type">>,<<"inmutable">>},
-%    {<<"genes">>,
-%     {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}}]}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classify_token_test() ->
   ClassMap = helper:prepare(classes),
@@ -108,6 +87,13 @@ find_another_gen_test() ->
     Expected = [<<"">>],
     ?assert(Expected =:= Gen).
     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+read_file_fail_test_() ->
+  ?_assertException(error, _,helper:read_file("test/void.json")).
+
+read_file_test_() ->
+  ?_assert("[{\"key1\":\"value1\"},{\"key2\":\"value2\"}]" =:= helper:read_file("test/simple.json")).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                 GEN FIXTURES 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,5 +281,3 @@ fixtureGiveMeManyTokens() ->
  {[{<<"class">>,<<"string">>},
    {<<"value">>,<<";">>},
    {<<"info">>,0}]}].
-   
-
