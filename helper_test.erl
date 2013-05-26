@@ -73,7 +73,14 @@ mutate_another_asymmetric_token_test() ->
     Token = fixtureGiveMeExitToken(),
     Class = fixtureGiveMeFlowClass(),
     ?assert([<<"">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
-    
+
+% mutate_one_symmetric_token_test() ->
+%     Token = fixtureGiveMeAssignmentToken(),
+%     Class = fixtureGiveMeAssignmentClass(),
+%     ?assert([<<"=">>] =:= helper:mutate({<<"assignment">>,<<"symmetric">>,Token,Class})).
+%     
+%    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,
+%      <<"|=">>,<<"+=">>] 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 find_gen_test() ->
     Genes = fixtureGiveMeCloneGenes(),
@@ -155,7 +162,7 @@ fixtureGiveMeAssignmentClass() ->
 {[{<<"name">>,<<"assignment">>},
    {<<"type">>,<<"symmetric">>},
    {<<"genePool">>,
-    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,
+    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,
      <<"|=">>,<<"+=">>]}]}.
      
 fixtureGiveMeAllClasses() ->
@@ -214,7 +221,7 @@ fixtureGiveMeAllClasses() ->
  {[{<<"name">>,<<"assignment">>},
    {<<"type">>,<<"symmetric">>},
    {<<"genePool">>,
-    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,
+    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,
      <<"|=">>,<<"+=">>]}]}].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

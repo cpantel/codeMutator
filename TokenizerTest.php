@@ -29,7 +29,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         '{"name":"comparisson","type":"symmetric","genePool":["==",">=","===","!=","!==","<="]},'.
         '{"name":"accessControl","type":"symmetric","genePool":["public","private","protected"]},'.
         '{"name":"bitwiseAssignment","type":"symmetric","genePool":["<<=",">>=","^="]},'.
-        '{"name":"assignment","type":"symmetric","genePool":["&=",".=","\/=","-=","%=","*=","|=","+="]}]';
+        '{"name":"assignment","type":"symmetric","genePool":["&=",".=","\/=","-=","=","%=","*=","|=","+="]}]';
    
     }
     

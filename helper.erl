@@ -5,8 +5,8 @@
   read_file/1
   ]).
 
-%abrir dets
-%cargar dets con clases
+%abrir ets
+%cargar ets con clases
 % para cada token
 %    classify_token
 %    find_gen

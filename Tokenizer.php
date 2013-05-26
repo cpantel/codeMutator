@@ -76,7 +76,7 @@ class Tokenizer {
         array(
           'name'=>'assignment',
           'type'=>'symmetric',
-          'genePool'=>array('&=','.=','/=','-=','%=','*=','|=','+=')
+          'genePool'=>array('&=','.=','/=','-=','=', '%=','*=','|=','+=')
         ),
     );
     
