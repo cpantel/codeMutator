@@ -90,10 +90,11 @@ mutate_one_asymmetric_token_test() ->
     Class = fixtureGiveMeCloneClass(),
     ?assert([<<"=">>] =:= helper:mutate({<<"clone">>,<<"asymmetric">>,Token,Class})).
     
-% mutate_another_asymmetric_token_test() ->
-%     Token = fixtureGiveMeFlowToken(),
-%     Class = fixtureGiveMeFlowClass(),
-%     ?assert([<<"=">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
+mutate_another_asymmetric_token_test() ->
+    Token = fixtureGiveMeExitToken(),
+    Class = fixtureGiveMeFlowClass(),
+    ?assert([<<"">>] =:= helper:mutate({<<"flow">>,<<"asymmetric">>,Token,Class})).
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 find_gen_test() ->
     Genes = fixtureGiveMeCloneGenes(),
@@ -249,7 +250,7 @@ fixtureGiveMeCloneToken() ->
    {<<"value">>,<<"clone">>},
    {<<"info">>,1}]}.
 
-fixtureGiveMeFlowToken() ->
+fixtureGiveMeExitToken() ->
 {[{<<"class">>,<<"flow">>},
    {<<"value">>,<<"exit">>},
    {<<"info">>,1}]}.

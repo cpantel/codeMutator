@@ -64,20 +64,19 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
   {[{<<"name">>,TokenClass},{<<"type">>,Type},_]}=ClassItem,
   {TokenClass,Type,Token,ClassItem}.
 
-        
+   
 mutate({ ClassName, <<"inmutable">>, Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , Class}) ->
    [Value];
 mutate({
        ClassName, <<"asymmetric">>, 
-       Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]},
+       Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
        Class={[
-         {<<"name">>,Value},
+         {<<"name">>,ClassName},
          {<<"type">>,<<"asymmetric">>},
          {<<"genes">>,Genes}
        ]}
    }) ->
-  [<<"=">>]. %TODO UNHARDCODE
-  %find_genes(Value,Genes).
+  find_gen(Value,Genes).
 
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}])->
   GenePool;
