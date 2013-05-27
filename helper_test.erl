@@ -69,13 +69,17 @@ classify_token_notoken_test() ->
   ?_assertException(error, _,helper:classify_token(ClassMap,[])).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 generate_the_rest_last_test() ->
-    ?assert([] =:= helper:generate_the_rest([],[])).
+    ?assert([] =:= helper:generate_the_rest([])).
 
-generate_the_rest_last_but_one_test() ->
-    ?assert([<<"$a">>] =:= helper:generate_the_rest([{<<"$a">>,[]}],[])).
+generate_the_rest_one_token_test() ->
+    ?assert([<<"$a">>] =:= helper:generate_the_rest([{<<"$a">>,[]}])).
 
 generate_the_rest_two_tokens_test() ->
-    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate_the_rest([{<<"$a">>,[]},{<<"$b">>,[]}],[])).
+    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate_the_rest([{<<"$a">>,[]},{<<"$b">>,[]}])).
+
+generate_the_rest_three_tokens_test() ->
+    ?assert([<<"$a">>,<<"$b">>,<<"$c">>] =:=
+       helper:generate_the_rest([{<<"$a">>,[]},{<<"$b">>,[]},{<<"$c">>,[]}])).
 
 generate_the_rest_two_tokens_and_accum_test() ->
     Expected = [<<"$a">>,<<"$b">>,<<"$c">>,<<"$d">>],
@@ -90,7 +94,45 @@ generate_the_rest_with_mutable_tokens_and_accum_test() ->
     ?assert( Expected =:= helper:generate_the_rest(Tokens,Accum)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+generate_with_accum_empty_test()->
+     ?assert([] =:= helper:generate([],[])).
 
+generate_with_empty_accum_one_inmutable_token_test()->
+   [
+    ?assert([<<"$a">>] =:= helper:generate( [ {<<"$a">>,[]} ],[] ) ),
+    ?assert([<<"$b">>] =:= helper:generate([{<<"$b">>,[]}],[]))
+   ].
+
+generate_with_accum_many_inmutable_token_test()->
+   [
+    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate([{<<"$b">>,[]}],[<<"$a">>])),
+    ?assert([<<"$a">>,<<"$b">>,<<"$c">>] =:= helper:generate([{<<"$c">>,[]}],[<<"$b">>,<<"$a">>]))
+   ].
+
+generate_with_accum_two_inmutable_token_test()->
+   [
+    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]}],[]))
+   ].
+
+generate_many_inmutable_token_test()->
+   [
+    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]}])),
+    ?assert([<<"$a">>,<<"$b">>,<<"$c">>] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]},{<<"$c">>,[]}]))
+   ].
+
+% generate_empty_test()->
+%     ?assert([] =:= helper:generate([])).
+% 
+% generate_one_inmutable_token_test()->
+%    [
+%     ?assert([<<"$a">>] =:= helper:generate([{<<"$a">>,[]}])),
+%     ?assert([<<"$b">>] =:= helper:generate([{<<"$b">>,[]}]))
+%    ].
+%     
+% generate_many_inmutable_token_test()->
+%    [
+%     ?assert([<<"$a">>,<<"$b">>] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]}]))
+%    ].
     
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
