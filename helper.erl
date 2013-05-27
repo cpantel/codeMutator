@@ -28,6 +28,29 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
 % accumulate every single token
 % when a list of tokens is found, fire a single mutation for every one
 
+generate_the_rest([],Accum) ->
+   lists:reverse(Accum);
+
+generate_the_rest([{Value,_Pool }|[]],Accum) ->
+   generate_the_rest([],[Value|Accum]);
+   
+generate_the_rest([{Value,_Pool }|TheRest],Accum) ->
+   generate_the_rest(TheRest,[Value|Accum]).
+  
+
+% generate([],Accum) ->
+%    lists:reverse(Accum);
+% 
+% generate_the_rest([{Value,_Pool }|[]],Accum) ->
+%    generate_the_rest([],[Value|Accum]);
+   
+generate([{Value,[] }|TheRest],Accum,MetaAccum) ->
+   generate(TheRest,[Value|Accum],MetaAccum);
+generate([{Value,Pool }|TheRest],Accum,MetaAccum) ->
+   foreach mutation in pool, 
+   generate_the_rest(TheRest,[Value|Accum],MetaAccum);
+   
+   
 
    
 mutate_token({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},_Info]} , _Class}) ->

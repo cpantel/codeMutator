@@ -67,7 +67,32 @@ classify_token_notoken_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
   ?_assertException(error, _,helper:classify_token(ClassMap,[])).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+generate_the_rest_last_test() ->
+    ?assert([] =:= helper:generate_the_rest([],[])).
 
+generate_the_rest_last_but_one_test() ->
+    ?assert([<<"$a">>] =:= helper:generate_the_rest([{<<"$a">>,[]}],[])).
+
+generate_the_rest_two_tokens_test() ->
+    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate_the_rest([{<<"$a">>,[]},{<<"$b">>,[]}],[])).
+
+generate_the_rest_two_tokens_and_accum_test() ->
+    Expected = [<<"$a">>,<<"$b">>,<<"$c">>,<<"$d">>],
+    Tokens = [{<<"$c">>,[]},{<<"$d">>,[]}],
+    Accum = [<<"$b">>,<<"$a">>],
+    ?assert( Expected =:= helper:generate_the_rest(Tokens,Accum)).
+    
+generate_the_rest_with_mutable_tokens_and_accum_test() ->
+    Expected = [<<"$a">>,<<"$b">>,<<"$c">>,<<"$d">>],
+    Tokens = [{<<"$c">>,[<<"$x">>,<<"$x">>]},{<<"$d">>,[<<"$x">>,<<"$x">>]}],
+    Accum = [<<"$b">>,<<"$a">>],
+    ?assert( Expected =:= helper:generate_the_rest(Tokens,Accum)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+    
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mutate_token_one_string_test() ->
     Token = fixtureGiveMeOneStringToken(),
@@ -315,7 +340,10 @@ fixtureGiveMeAssignmentToken()->
  {[{<<"class">>,<<"assignment">>},
    {<<"value">>,<<"=">>},
    {<<"info">>,0}]}.
-   
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                 FULL PROGRAM FIXTURES 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fixtureGiveMeCloneProgram() ->
 [{[{<<"class">>,<<"string">>},
    {<<"value">>,<<"<?php ">>},
@@ -343,7 +371,7 @@ fixtureGiveMeCloneProgram() ->
    {<<"info">>,0}]}].
 
    
-fixtureGiveMeManyTokens() ->
+fixtureGiveMeSimpleProgram() ->
 [{[{<<"class">>,<<"string">>},
    {<<"value">>,<<"<?php ">>},
    {<<"info">>,1}]},
