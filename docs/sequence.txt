@@ -1,0 +1,14 @@
+
+The framework ask the component to tokenizing the source code to a json.
+
+The framework ask the core to generate all the mutations from the json to several json.
+
+The framework ask the component to
+   generate the source code from each json
+   optionally compile
+   run the tests
+  and it keeps track of the results.
+
+Every component has a tokenizer.
+
+Every component has a code generator or uses the generic one.
