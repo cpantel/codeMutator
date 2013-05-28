@@ -48,14 +48,27 @@ generate_the_rest([{Value,_Pool }|TheRest],Accum) ->
 %    generate_the_rest([],[Value|Accum]);
 
 generate(Tokens) ->
-   generate(Tokens,[]).
+   [generate(Tokens,[])].
 
+generate([],[]) ->
+   [];
 generate([],Accum) ->
    lists:reverse(Accum);
+   
 generate([{Token,[]}],Accum) ->  
    generate([],[Token|Accum]);
+   
 generate([{Token,[]}| TheRest],Accum) ->  
-   generate(TheRest,[Token|Accum]).
+   generate(TheRest,[Token|Accum]);
+
+%generate([{<<"clone">>,[<<"=">>]}],[])   
+generate([{Value,Pool }|TheRest],Accum) ->
+   io:format("ok~n"),
+   [ generate(TheRest,[Value |Accum]) | [generate_the_rest(TheRest,[Gen|Accum]) || Gen <- Pool]].
+
+   
+% generate([{Token,[Mutations]}],Accum) ->
+%   [[Token],[<<"=">>]]. 
 
 %generate([{<<"$a">>,[]},{<<"$b">>,[]}],[])
    
@@ -66,10 +79,10 @@ generate([{Token,[]}| TheRest],Accum) ->
    
    
    
-generate([{Value,[] }|TheRest],Accum,MetaAccum) ->
-   generate(TheRest,[Value|Accum],MetaAccum);
-generate([{Value,Pool }|TheRest],Accum,MetaAccum) ->
-   [ generate_the_rest([Gen|TheRest],Accum) || Gen <- Pool].
+% generate([{Value,[] }|TheRest],Accum,MetaAccum) ->
+%    generate(TheRest,[Value|Accum],MetaAccum);
+% generate([{Value,Pool }|TheRest],Accum,MetaAccum) ->
+%    [ generate_the_rest([Gen|TheRest],Accum) || Gen <- Pool].
    
    
 
