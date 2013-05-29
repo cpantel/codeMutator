@@ -7,7 +7,7 @@ helper_test.beam: helper_test.erl
 
 
 php_test: 
-	phpunit --colors .
+	phpunit --colors php
 
 erl_test: helper_test.beam helper.beam 
 	erl -noshell -s helper_test test -s init stop
