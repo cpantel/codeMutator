@@ -72,25 +72,50 @@ generate_the_rest_last_test() ->
     ?assert([] =:= helper:generate_the_rest([])).
 
 generate_the_rest_one_token_test() ->
-    ?assert([<<"$a">>] =:= helper:generate_the_rest([{<<"$a">>,[]}])).
+    ?assert([{<<"$a">>,{<<"info">>,1}}] =:= helper:generate_the_rest([{<<"$a">>,{<<"info">>,1},[]}])).
 
 generate_the_rest_two_tokens_test() ->
-    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate_the_rest([{<<"$a">>,[]},{<<"$b">>,[]}])).
+    ?assert([{<<"$a">>,{<<"info">>,1}},{<<"$b">>,{<<"info">>,1}}] =:= helper:generate_the_rest([{<<"$a">>,{<<"info">>,1},[]},{<<"$b">>,{<<"info">>,1},[]}])).
 
 generate_the_rest_three_tokens_test() ->
-    ?assert([<<"$a">>,<<"$b">>,<<"$c">>] =:=
-       helper:generate_the_rest([{<<"$a">>,[]},{<<"$b">>,[]},{<<"$c">>,[]}])).
+    Expected = [
+      {<<"$a">>,{<<"info">>,1}},
+      {<<"$b">>,{<<"info">>,1}},
+      {<<"$c">>,{<<"info">>,1}}
+    ], 
+    Tokens = [
+      {<<"$a">>,{<<"info">>,1},[]},
+      {<<"$b">>,{<<"info">>,1},[]},
+      {<<"$c">>,{<<"info">>,1},[]}
+    ],
+    ?assert(Expected=:= helper:generate_the_rest(Tokens)).
 
 generate_the_rest_two_tokens_and_accum_test() ->
-    Expected = [<<"$a">>,<<"$b">>,<<"$c">>,<<"$d">>],
-    Tokens = [{<<"$c">>,[]},{<<"$d">>,[]}],
-    Accum = [<<"$b">>,<<"$a">>],
+    Expected = [
+      {<<"$a">>,{<<"info">>,1}},
+      {<<"$b">>,{<<"info">>,1}},
+      {<<"$c">>,{<<"info">>,1}},
+      {<<"$d">>,{<<"info">>,1}}
+    ],
+    Tokens = [
+       {<<"$c">>,{<<"info">>,1},[]},
+       {<<"$d">>,{<<"info">>,1},[]}
+     ],
+    Accum = [
+       {<<"$b">>,{<<"info">>,1}},
+       {<<"$a">>,{<<"info">>,1}}
+    ],
     ?assert( Expected =:= helper:generate_the_rest(Tokens,Accum)).
     
 generate_the_rest_with_mutable_tokens_and_accum_test() ->
-    Expected = [<<"$a">>,<<"$b">>,<<"$c">>,<<"$d">>],
-    Tokens = [{<<"$c">>,[<<"$x">>,<<"$x">>]},{<<"$d">>,[<<"$x">>,<<"$x">>]}],
-    Accum = [<<"$b">>,<<"$a">>],
+    Expected = [
+      {<<"$a">>,{<<"info">>,1}},
+      {<<"$b">>,{<<"info">>,1}},
+      {<<"$c">>,{<<"info">>,1}},
+      {<<"$d">>,{<<"info">>,1}}
+    ],
+    Tokens = [{<<"$c">>,{<<"info">>,1},[<<"$x">>,<<"$x">>]},{<<"$d">>,{<<"info">>,1},[<<"$x">>,<<"$x">>]}],
+    Accum = [{<<"$b">>,{<<"info">>,1}},{<<"$a">>,{<<"info">>,1}}],
     ?assert( Expected =:= helper:generate_the_rest(Tokens,Accum)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -101,58 +126,63 @@ generate_with_accum_empty_test()->
 generate_with_empty_accum_one_inmutable_token_test()->
    Accum =[],
    [
-    ?assert([<<"$a">>] =:= helper:generate( [ {<<"$a">>,[]} ],Accum ) ),
-    ?assert([<<"$b">>] =:= helper:generate([{<<"$b">>,[]}],Accum))
+    ?assert([{<<"$a">>,{<<"info">>,1}}] =:= helper:generate( [ {<<"$a">>,{<<"info">>,1},[]} ],Accum ) ),
+    ?assert([{<<"$b">>,{<<"info">>,1}}] =:= helper:generate([{<<"$b">>,{<<"info">>,1},[]}],Accum))
    ].
 
 generate_with_accum_many_inmutable_token_test()->
-   Accum1 =[<<"$a">>],
-   Accum2 =[<<"$b">>,<<"$a">>],
+   Accum1 =[{<<"$a">>,{<<"info">>,1}}],
+   Accum2 =[{<<"$b">>,{<<"info">>,1}},{<<"$a">>,{<<"info">>,1}}],
    [
-    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate([{<<"$b">>,[]}],Accum1)),
-    ?assert([<<"$a">>,<<"$b">>,<<"$c">>] =:= helper:generate([{<<"$c">>,[]}],Accum2))
+    ?assert([{<<"$a">>,{<<"info">>,1}},{<<"$b">>,{<<"info">>,1}}] =:= helper:generate([{<<"$b">>,{<<"info">>,1},[]}],Accum1)),
+    ?assert([{<<"$a">>,{<<"info">>,1}},{<<"$b">>,{<<"info">>,1}},{<<"$c">>,{<<"info">>,1}}] =:= helper:generate([{<<"$c">>,{<<"info">>,1},[]}],Accum2))
    ].
 
 generate_with_accum_two_inmutable_token_test()->
    Accum = [],
    [
-    ?assert([<<"$a">>,<<"$b">>] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]}],Accum))
+    ?assert([{<<"$a">>,{<<"info">>,1}},{<<"$b">>,{<<"info">>,1}}] 
+       =:= helper:generate([{<<"$a">>,{<<"info">>,1},[]},{<<"$b">>,{<<"info">>,1},[]}],Accum))
    ].
 
 generate_many_inmutable_token_test()->
    [
-    ?assert([[<<"$a">>,<<"$b">>]] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]}])),
-    ?assert([[<<"$a">>,<<"$b">>,<<"$c">>]] =:= helper:generate([{<<"$a">>,[]},{<<"$b">>,[]},{<<"$c">>,[]}]))
+    ?assert([[{<<"$a">>,{<<"info">>,1}},{<<"$b">>,{<<"info">>,1}}]]
+       =:= helper:generate([{<<"$a">>,{<<"info">>,1},[]},{<<"$b">>,{<<"info">>,1},[]}])),
+    ?assert([[{<<"$a">>,{<<"info">>,1}},{<<"$b">>,{<<"info">>,1}},{<<"$c">>,{<<"info">>,1}}]]
+       =:= helper:generate([{<<"$a">>,{<<"info">>,1},[]},{<<"$b">>,{<<"info">>,1},[]},{<<"$c">>,{<<"info">>,1},[]}]))
    ].
 
 generate_empty_test()->
     ?assert([[]] =:= helper:generate([])).
 
+    % fail
 generate_test() ->
-    ?assert([[<<"clone">>],[<<"=">>]] =:= helper:generate([{<<"clone">>,[<<"=">>]}])).
+    ?assert([[{<<"clone">>,{<<"info">>,1}}],[{<<"=">>,{<<"info">>,1}}]]
+       =:= helper:generate([{<<"clone">>,{<<"info">>,1},[<<"=">>]}])).
 
-generate_test2() ->
-    Expected = [[<<"clone">>,<<"$a">>],[<<"=">>,<<"$a">>]],
-    Tokens = [{<<"clone">>,[<<"=">>]},{<<"$a">>,[]}],
-    ?assert(Expected =:= helper:generate( Tokens )).
-
-generate_test3() ->
-    Expected = [[<<"clone">>,<<"$a">>,<<"$b">>],[<<"=">>,<<"$a">>,<<"$b">>]],
-    Tokens = [{<<"clone">>,[<<"=">>]},{<<"$a">>,[]},{<<"$b">>,[]}],
-    ?assert(Expected =:= helper:generate( Tokens )).
-    
-generate_test4() ->
-    Expected = [[<<"$a">>,<<"clone">>,<<"$b">>],[<<"$a">>,<<"=">>,<<"$b">>]],
-    Tokens = [{<<"$a">>,[]},{<<"clone">>,[<<"=">>]},{<<"$b">>,[]}],
-    ?assert(Expected =:= helper:generate( Tokens )). 
-generate_test5() ->
-    Expected = [
-       [<<"$a">>,<<"mutable">>,<<"$b">>],
-       [<<"$a">>,<<"mutation1">>,<<"$b">>],
-       [<<"$a">>,<<"mutation2">>,<<"$b">>]
-    ],
-    Tokens = [{<<"$a">>,[]},{<<"mutable">>,[<<"mutation1">>,<<"mutation2">>]},{<<"$b">>,[]}],
-    ?assert(Expected =:= helper:generate( Tokens )).
+% % generate_test2() ->
+% %     Expected = [[<<"clone">>,<<"$a">>],[<<"=">>,<<"$a">>]],
+% %     Tokens = [{<<"clone">>,[<<"=">>]},{<<"$a">>,[]}],
+% %     ?assert(Expected =:= helper:generate( Tokens )).
+% % 
+% % generate_test3() ->
+% %     Expected = [[<<"clone">>,<<"$a">>,<<"$b">>],[<<"=">>,<<"$a">>,<<"$b">>]],
+% %     Tokens = [{<<"clone">>,[<<"=">>]},{<<"$a">>,[]},{<<"$b">>,[]}],
+% %     ?assert(Expected =:= helper:generate( Tokens )).
+% %     
+% % generate_test4() ->
+% %     Expected = [[<<"$a">>,<<"clone">>,<<"$b">>],[<<"$a">>,<<"=">>,<<"$b">>]],
+% %     Tokens = [{<<"$a">>,[]},{<<"clone">>,[<<"=">>]},{<<"$b">>,[]}],
+% %     ?assert(Expected =:= helper:generate( Tokens )). 
+% % generate_test5() ->
+% %     Expected = [
+% %        [<<"$a">>,<<"mutable">>,<<"$b">>],
+% %        [<<"$a">>,<<"mutation1">>,<<"$b">>],
+% %        [<<"$a">>,<<"mutation2">>,<<"$b">>]
+% %     ],
+% %     Tokens = [{<<"$a">>,[]},{<<"mutable">>,[<<"mutation1">>,<<"mutation2">>]},{<<"$b">>,[]}],
+% %     ?assert(Expected =:= helper:generate( Tokens )).
     
 % generate_one_inmutable_token_test()->
 %    [
