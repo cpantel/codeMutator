@@ -87,28 +87,28 @@ generate([{Value,Info,Pool }|TheRest],Accum) ->
    
 
    
-mutate_token({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},_Info]} , _Class}) ->
-   {Value,[]};
+mutate_token({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , _Class}) ->
+   {Value,Info,[]};
 mutate_token({
        ClassName,<<"asymmetric">>, 
-       _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
+       _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[Info]]]},
        _Class={[
          {<<"name">>,ClassName},
          {<<"type">>,<<"asymmetric">>},
          {<<"genes">>,Genes}
        ]}
    }) ->
-  {Value,find_gen(Value,Genes,<<"asymmetric">> )};
+  {Value,Info,find_gen(Value,Genes,<<"asymmetric">> )};
 mutate_token({
        ClassName,<<"symmetric">>, 
-       _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[_Info]]]},
+       _Token={[{<<"class">>,ClassName}|[{<<"value">>,Value}|[Info]]]},
        _Class={[
          {<<"name">>,ClassName},
          {<<"type">>,<<"symmetric">>},
          {<<"genePool">>,Genes}
        ]}
    }) ->
-  {Value,find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>)}.
+  {Value,Info,find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,Genes}]}], <<"symmetric">>)}.
 
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}], <<"symmetric">>)->
   lists:delete(Value,GenePool);

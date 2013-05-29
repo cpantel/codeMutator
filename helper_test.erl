@@ -211,22 +211,22 @@ mutate_token_one_string_test() ->
 mutate_token_another_inmutable_test() ->
     Token = fixtureGiveMeAnotherStringToken(),
     Class = fixtureGiveMeStringClass(),
-    ?assert({<<"$a">>,[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
+    ?assert({<<"$a">>,{<<"info">>,1},[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
 
 mutate_token_one_asymmetric_test() ->
     Token = fixtureGiveMeCloneToken(),
     Class = fixtureGiveMeCloneClass(),
-    ?assert({<<"clone">>,[<<"=">>]} =:= helper:mutate_token({<<"clone">>,<<"asymmetric">>,Token,Class})).
+    ?assert({<<"clone">>,{<<"info">>,1},[<<"=">>]} =:= helper:mutate_token({<<"clone">>,<<"asymmetric">>,Token,Class})).
     
 mutate_token_another_asymmetric_test() ->
     Token = fixtureGiveMeExitToken(),
     Class = fixtureGiveMeFlowClass(),
-    ?assert({<<"exit">>,[<<"">>]} =:= helper:mutate_token({<<"flow">>,<<"asymmetric">>,Token,Class})).
+    ?assert({<<"exit">>,{<<"info">>,1},[<<"">>]} =:= helper:mutate_token({<<"flow">>,<<"asymmetric">>,Token,Class})).
 
 mutate_token_one_symmetric_test() ->
     Token = fixtureGiveMeAssignmentToken(),
     Class = fixtureGiveMeAssignmentClass(),
-    Expected = {<<"=">>,[<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>]},
+    Expected = {<<"=">>,{<<"info">>,0},[<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>]},
     ?assert(Expected =:= helper:mutate_token({<<"assignment">>,<<"symmetric">>,Token,Class})).
     
 mutate_token_bad_string_type_test() ->
