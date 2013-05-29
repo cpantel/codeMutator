@@ -206,7 +206,7 @@ generate_empty_test()->
 mutate_token_one_string_test() ->
     Token = fixtureGiveMeOneStringToken(),
     Class = fixtureGiveMeStringClass(),
-    ?assert({<<"<?php ">>,[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
+    ?assert({<<"<?php ">>,{<<"info">>,1},[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
  
 mutate_token_another_inmutable_test() ->
     Token = fixtureGiveMeAnotherStringToken(),
