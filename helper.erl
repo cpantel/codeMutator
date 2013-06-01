@@ -33,59 +33,48 @@ generate_the_rest(Tokens) ->
 
 generate_the_rest([],Accum) ->
    lists:reverse(Accum);
-
 generate_the_rest([{Value,Info,_Pool }|[]],Accum) ->
    generate_the_rest([],[{Value,Info}|Accum]);
-   
 generate_the_rest([{Value,Info,_Pool }|TheRest],Accum) ->
    generate_the_rest(TheRest,[{Value,Info}|Accum]).
   
 
-% generate([],Accum) ->
-%    lists:reverse(Accum);
-% 
-% generate_the_rest([{Value,_Pool }|[]],Accum) ->
-%    generate_the_rest([],[Value|Accum]);
+depth([H|_])->
+   depth(H) + 1;
+depth([])->
+   1;
+depth(_) ->
+   0.
+
+fix([[[]]]) ->
+   [];
+fix([[]]) ->   
+  [];
+fix([]) ->  
+  [];
+fix(Tokens)->
+   Levels = depth(Tokens),
+   case Levels of
+     0->[[Tokens]];
+     1->[Tokens];
+     2->Tokens;
+     3->[R]=Tokens,
+        R
+   end.
 
 generate(Tokens) ->
-   [generate(Tokens,[])].
+   fix(generate(Tokens,[])).
 
 generate([],[]) ->
    [];
 generate([],Accum) ->
    lists:reverse(Accum);
-   
 generate([{Token,Info,[]}],Accum) ->  
    generate([],[{Token,Info}|Accum]);
-   
 generate([{Token,Info,[]}| TheRest],Accum) ->  
    generate(TheRest,[{Token,Info}|Accum]);
-
-%generate([{<<"clone">>,[<<"=">>]}],[])   
 generate([{Value,Info,Pool }|TheRest],Accum) ->
-   io:format("ok~n"),
    [ generate(TheRest,[{Value,Info} |Accum]) | [generate_the_rest(TheRest,[{Gen,Info}|Accum]) || Gen <- Pool]].
-
-   
-% generate([{Token,[Mutations]}],Accum) ->
-%   [[Token],[<<"=">>]]. 
-
-%generate([{<<"$a">>,[]},{<<"$b">>,[]}],[])
-   
-   %    ;
-% 
-% generate([{Token,[]}| TheRest],Accum) ->  
-%    [generate(TheRest,[Token|Accum])  ].
-   
-   
-   
-% generate([{Value,[] }|TheRest],Accum,MetaAccum) ->
-%    generate(TheRest,[Value|Accum],MetaAccum);
-% generate([{Value,Pool }|TheRest],Accum,MetaAccum) ->
-%    [ generate_the_rest([Gen|TheRest],Accum) || Gen <- Pool].
-   
-   
-
    
 mutate_token({ ClassName, <<"inmutable">>, _Token={[{<<"class">>,ClassName},{<<"value">>,Value},Info]} , _Class}) ->
    {Value,Info,[]};
@@ -117,7 +106,7 @@ find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}], <<"asymmetri
 find_gen(Value, [{[{<<"gene">>,Value},{<<"genePool">>,GenePool}]}|_TheRest],<<"asymmetric">>)->
   GenePool;
 find_gen(Value1, [{[{<<"gene">>,Value2},_]}| TheRest ],Type) when Value1 =/= Value2 ->
-    find_gen(Value1,TheRest,Type).
+  find_gen(Value1,TheRest,Type).
   
 load_one_class(Ets,Class={[{<<"name">>,Name}|_]}) ->
   ets:insert(Ets, {Name,Class}).
