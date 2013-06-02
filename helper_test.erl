@@ -217,20 +217,23 @@ generate_2_two_inmutable_token_test()->
        =:= helper:generate([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}],Accum))
    ].
 
-generate_many_inmutable_token_test()->
-  [
+generate_many1_inmutable_token_test()->
+  
     ?assert(
        [[{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]]
      =:= 
        helper:generate([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}])
-    ),
+    ).
+
+  
+generate_many2_inmutable_token_test()->
     ?assert(
       [[{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}},{<<"inmutable3">>,{<<"info">>,1}}]]
     =:= 
       helper:generate([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]},{<<"inmutable3">>,{<<"info">>,1},[]}])
-    )
-  ].
+    ).
 
+  
 generate_empty_test()->
     ?assert([] =:= helper:generate([])).
 

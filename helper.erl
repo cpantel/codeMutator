@@ -62,8 +62,12 @@ fix(Tokens)->
         R
    end.
 
+normalizar([L = [[_|_]|_]]) -> L;
+  normalizar(L) -> L.
+
 generate(Tokens) ->
    fix(generate(Tokens,[])).
+%  normalizar(generate(Tokens,[])).
 
 generate([],[]) ->
    [];
