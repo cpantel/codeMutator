@@ -1,20 +1,29 @@
 -module(helper).
 -export([
   prepare/1,
+  load_classes/2,
   mutate_token/1,
-  read_file/1
-  ]).
-
-%abrir ets
-%cargar ets con clases
-% para cada token
-%    classify_token
-%    find_gen
-%    mutate_token
-
+  generate/1
+]).
 
 %   statistics(runtime),
 %   statistics(wall_clock),
+
+%
+% Source = read json source 
+% [ Classes,SourceTokens ]= convert to terms(Source)
+% load (Classes)
+% ClassifiedTokens = classify_every_token(SourceTokens)
+% MutatedTokens = mutate every token(ClassifiedTokens)
+% Mutations = generate(MutatedTokens)
+% save terms_to_json(Mutations)
+
+mutate_tokens(Tokens) ->
+  [mutate_token(Token) || Token <- Tokens].
+  
+classify_tokens(ClassMap,Tokens)->
+   [classify_token(ClassMap, Token) || Token <-Tokens].
+
 
 classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
   [{TokenClass,ClassItem}]=lookup_class(ClassMap,TokenClass),
@@ -37,14 +46,16 @@ generate_the_rest([{Value,Info,_Pool }|[]],Accum) ->
    generate_the_rest([],[{Value,Info}|Accum]);
 generate_the_rest([{Value,Info,_Pool }|TheRest],Accum) ->
    generate_the_rest(TheRest,[{Value,Info}|Accum]).
-  
 
-depth([H|_])->
-   depth(H) + 1;
-depth([])->
-   1;
-depth(_) ->
-   0.
+depth(L) ->
+  depth(L,0).
+  
+depth([H|_],Accum)->
+   depth(H,Accum + 1);
+depth([],Accum)->
+   Accum +1;
+depth(_,Accum) ->
+   Accum.
 
 fix([[[]]]) ->
    [];
@@ -62,8 +73,8 @@ fix(Tokens)->
         R
    end.
 
-normalizar([L = [[_|_]|_]]) -> L;
-  normalizar(L) -> L.
+% normalizar([L = [[_|_]|_]]) -> L;
+%   normalizar(L) -> L.
 
 generate(Tokens) ->
    fix(generate(Tokens,[])).
@@ -127,16 +138,29 @@ lookup_class(ClassMap,Class) ->
 prepare(Ets) ->
   ets:new(Ets, [set]).
  
-read(Line) ->
-  json_eep:json_to_term(Line).
-  
-get_all_lines(Device, Accum) ->
-    case io:get_line(Device, "") of
-        eof  -> file:close(Device), hd(lists:reverse(Accum));
-        Line -> get_all_lines(Device, [Line|Accum])
-    end.
+json_to_term(Line) ->
+  json_eep:json_to_term(binary:bin_to_list(Line)).
+ 
+term_to_json(Mutations) ->
+  json_eep:term_to_json(fix_tokens(Mutations)).
 
-read_file(FileName) ->
-    {ok, Device} = file:open(FileName, [read]),
-    get_all_lines(Device, []).
+fix_tokens(Tokens) ->
+  [ repack_file(File) || File <- Tokens].
+
+repack_file(File) ->  
+  [ repack_token( Token  ) || Token <- File].
+  
+repack_token({Value, Info}) ->
+  {[{<<"value">>,Value},Info]}.
+
+  
+% get_all_lines(Device, Accum) ->
+%     case io:get_line(Device, "") of
+%         eof  -> file:close(Device), hd(lists:reverse(Accum));
+%         Line -> get_all_lines(Device, [Line|Accum])
+%     end.
+% 
+% read_file(FileName) ->
+%     {ok, Device} = file:open(FileName, [read]),
+%     get_all_lines(Device, []).
 

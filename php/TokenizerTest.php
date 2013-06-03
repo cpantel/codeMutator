@@ -18,8 +18,9 @@ require_once(dirname(__FILE__). '/Tokenizer.php');
 
 class TokenizerTest extends PHPUnit_Framework_TestCase {
     private function getJsonClasses() {
-        return '[{"name":"string","type":"inmutable","genes":[]},'.
+       return '['.
         '{"name":"clone","type":"asymmetric","genes":[{"gene":"clone","genePool":["="]}]},'.
+        '{"name":"string","type":"inmutable","genes":[]},'.
         '{"name":"flow","type":"asymmetric","genes":[{"gene":"break","genePool":["","continue","exit","return"]},{"gene":"continue","genePool":["","break","exit","return"]},{"gene":"exit","genePool":[""]},{"gene":"return","genePool":["","break","continue","exit"]}]},'.
         '{"name":"arithmetic","type":"symmetric","genePool":["&","\/","-","%","*","|","+","^"]},'.
         '{"name":"bitwise","type":"symmetric","genePool":[">>","<<"]},'.
@@ -29,8 +30,8 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         '{"name":"comparisson","type":"symmetric","genePool":["==",">=","===","!=","!==","<="]},'.
         '{"name":"accessControl","type":"symmetric","genePool":["public","private","protected"]},'.
         '{"name":"bitwiseAssignment","type":"symmetric","genePool":["<<=",">>=","^="]},'.
-        '{"name":"assignment","type":"symmetric","genePool":["&=",".=","\/=","-=","=","%=","*=","|=","+="]}]';
-   
+        '{"name":"assignment","type":"symmetric","genePool":["&=",".=","\/=","-=","=","%=","*=","|=","+="]}'.
+       ']';
     }
     
     private function getJsonTokens(){

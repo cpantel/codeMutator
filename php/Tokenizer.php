@@ -12,16 +12,16 @@ class Tokenizer {
     
     private $classDescription = array(
         array(
-          'name'=>'string',
-          'type'=>'inmutable',
-          'genes'=>array()
-        ),
-        array(
           'name'=>'clone',
           'type'=>'asymmetric',
           'genes'=>array(
             array('gene'=>'clone', 'genePool'=>array('='))
           )
+        ),
+        array(
+          'name'=>'string',
+          'type'=>'inmutable',
+          'genes'=>array()
         ),
         array(
           'name'=>'flow',

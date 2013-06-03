@@ -4,8 +4,84 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% Source = read json source 
+% [ Classes,SourceTokens ]= convert to terms(Source)
+% load (Classes)
+% ClassifiedTokens = classify_every_token(SourceTokens)
+% MutatedTokens = mutate every token(ClassifiedTokens)
+% Mutations = generate(MutatedTokens)
+% save terms_to_json(Mutations)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+full_without_tokens_test()->
+    ClassMap = helper:prepare(classes),
+    {ok, Source} = file:read_file("test/fixtures/classes.php.json"),
+    {[{<<"classes">>,Classes},{<<"tokens">>, SourceTokens}]} =  helper:json_to_term(Source),
+    [ FirstClass| [SecondClass| _ ] ] = Classes,
+
+    [
+      ?assert([] =:= SourceTokens),
+      ?assert(fixtureGiveMeCloneClass() =:= FirstClass),
+      ?assert(fixtureGiveMeStringClass() =:= SecondClass)
+    ].
+    
+
+helloworld_test()->
+    Expected = "[[{\"value\":\"<?php \",\"info\":1},{\"value\":\"print\",\"info\":1},{\"value\":\"(\",\"info\":0},{\"value\":\"\\\"Hello, world!\\\"\",\"info\":1},{\"value\":\")\",\"info\":0},{\"value\":\";\",\"info\":0}]]",
+    ClassMap = helper:prepare(classes),
+    {ok, Source} = file:read_file("test/fixtures/helloworld.php.json"),
+    {[{<<"classes">>,Classes},{<<"tokens">>, SourceTokens}]} =  helper:json_to_term(Source),
+    helper:load_classes(ClassMap, Classes),
+    ClassifiedTokens = helper:classify_tokens(ClassMap,SourceTokens),
+    MutatedTokens = helper:mutate_tokens(ClassifiedTokens),
+    Mutations = helper:generate(MutatedTokens),
+    MutationsJson = helper:term_to_json(Mutations),
+    ?assert(Expected =:= MutationsJson).
+    
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+classify_tokens_test() ->
+  ClassMap = helper:prepare(classes),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  Tokens = [ fixtureGiveMeOneStringToken(),fixtureGiveMeCloneToken() ], 
+  Expected = [    
+    {<<"string">>,<<"inmutable">>,fixtureGiveMeOneStringToken(),fixtureGiveMeStringClass()},
+    {<<"clone">>,<<"asymmetric">>,fixtureGiveMeCloneToken(),fixtureGiveMeCloneClass()}
+  ],
+     
+  ?assert(Expected =:= helper:classify_tokens(ClassMap,Tokens)). 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+mutate_tokens_test() ->
+  ClassifiedTokens = [ 
+    {<<"string">>,<<"inmutable">>,fixtureGiveMeOneStringToken(),fixtureGiveMeStringClass()},
+    {<<"clone">>,<<"asymmetric">>,fixtureGiveMeCloneToken(),fixtureGiveMeCloneClass()}
+  ],
+  Expected = [{<<"<?php ">>,{<<"info">>,1},[]}, {<<"clone">>,{<<"info">>,1},[<<"=">>]}],
+     
+  ?assert(Expected =:= helper:mutate_tokens(ClassifiedTokens)). 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+classify_token_test() ->
+  ClassMap = helper:prepare(classes),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  InmutableToken = fixtureGiveMeOneStringToken(),
+  InmutableClass = fixtureGiveMeStringClass(),
+  AsymmetricToken = fixtureGiveMeCloneToken(),
+  AsymmetricClass = fixtureGiveMeCloneClass(),
+  SymmetricToken = fixtureGiveMeAssignmentToken(),
+  SymmetricClass =fixtureGiveMeAssignmentClass(),
+  [
+     ?assert({<<"string">>,<<"inmutable">>,InmutableToken,InmutableClass} =:= helper:classify_token(ClassMap,InmutableToken)),
+     ?assert({<<"clone">>,<<"asymmetric">>,AsymmetricToken,AsymmetricClass} =:= helper:classify_token(ClassMap,AsymmetricToken)),
+     ?assert({<<"assignment">>,<<"symmetric">>,SymmetricToken,SymmetricClass} =:= helper:classify_token(ClassMap,SymmetricToken))
+  ].
+
+classify_token_notoken_test() ->
+  ClassMap = helper:prepare(classes),
+  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  ?_assertException(error, _,helper:classify_token(ClassMap,[])).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 lookup_class_test() ->
   ClassMap = helper:prepare(classes),
   helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
@@ -43,30 +119,10 @@ load_classes_empty_test() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 % % borrable
-read_test() ->
-   Buffer = helper:read("[1,3.14,{\"key\":\"value\"}]"),
-   ?assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]).%,
+% json_to_term_test() ->
+%    Buffer = helper:json_to_term("[1,3.14,{\"key\":\"value\"}]"),
+%    ?assert(Buffer=:=[1,3.14,{[{<<"key">>,<<"value">>}]}]).%,
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-classify_token_test() ->
-  ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
-  InmutableToken = fixtureGiveMeOneStringToken(),
-  InmutableClass = fixtureGiveMeStringClass(),
-  AsymmetricToken = fixtureGiveMeCloneToken(),
-  AsymmetricClass = fixtureGiveMeCloneClass(),
-  SymmetricToken = fixtureGiveMeAssignmentToken(),
-  SymmetricClass =fixtureGiveMeAssignmentClass(),
-  [
-     ?assert({<<"string">>,<<"inmutable">>,InmutableToken,InmutableClass} =:= helper:classify_token(ClassMap,InmutableToken)),
-     ?assert({<<"clone">>,<<"asymmetric">>,AsymmetricToken,AsymmetricClass} =:= helper:classify_token(ClassMap,AsymmetricToken)),
-     ?assert({<<"assignment">>,<<"symmetric">>,SymmetricToken,SymmetricClass} =:= helper:classify_token(ClassMap,SymmetricToken))
-  ].
-
-classify_token_notoken_test() ->
-  ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
-  ?_assertException(error, _,helper:classify_token(ClassMap,[])).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 generate_the_rest_last_test() ->
     ?assert([] =:= helper:generate_the_rest([])).
@@ -331,15 +387,8 @@ find_gen_symmetric_another_class_test() ->
     Gen = helper:find_gen(<<"private">>,[{[{<<"gene">>,<<"private">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
     Expected = [<<"public">>,<<"protected">>],
     ?assert(Expected =:= Gen).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-read_file_fail_test_() ->
-  ?_assertException(error, _,helper:read_file("test/void.json")).
-
-read_file_test_() ->
-  ?_assert("[{\"key1\":\"value1\"},{\"key2\":\"value2\"}]" =:= helper:read_file("test/simple.json")).
-
+    
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                 GEN FIXTURES 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -419,7 +468,7 @@ fixtureGiveMeAssignmentClass() ->
    {<<"genePool">>,
     [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,
      <<"|=">>,<<"+=">>]}]}.
-     
+
 fixtureGiveMeAllClasses() ->
 [{[{<<"name">>,<<"string">>},
    {<<"type">>,<<"inmutable">>},
