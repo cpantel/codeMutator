@@ -1,9 +1,9 @@
-helper.beam: helper.erl
-	erlc +export_all helper.erl
+mutator.beam: mutator.erl
+	erlc +export_all mutator.erl
 
 	
-helper_test.beam: helper_test.erl
-	erlc helper_test.erl
+mutator_private_test.beam: mutator_private_test.erl
+	erlc mutator_private_test.erl
 
 fixtures.beam: fixtures.erl
 	erlc +export_all fixtures.erl
@@ -11,8 +11,8 @@ fixtures.beam: fixtures.erl
 php_test: 
 	phpunit --colors php
 
-erl_test: helper_test.beam helper.beam fixtures.beam
-	erl -noshell -s helper_test test -s init stop
+erl_test: mutator_private_test.beam mutator.beam fixtures.beam
+	erl -noshell -s mutator_private_test test -s init stop
 
 full_test: php_test erl_test
 
