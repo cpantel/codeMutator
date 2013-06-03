@@ -21,8 +21,8 @@ full_without_tokens_test()->
 
     [
       ?assert([] =:= SourceTokens),
-      ?assert(fixtureGiveMeCloneClass() =:= FirstClass),
-      ?assert(fixtureGiveMeStringClass() =:= SecondClass)
+      ?assert(fixtures:giveMeCloneClass() =:= FirstClass),
+      ?assert(fixtures:giveMeStringClass() =:= SecondClass)
     ].
     
 
@@ -42,19 +42,19 @@ helloworld_test()->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classify_tokens_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
-  Tokens = [ fixtureGiveMeOneStringToken(),fixtureGiveMeCloneToken() ], 
+  helper:load_classes(ClassMap, fixtures:giveMeAllClasses()),
+  Tokens = [ fixtures:giveMeOneStringToken(),fixtures:giveMeCloneToken() ], 
   Expected = [    
-    {<<"string">>,<<"inmutable">>,fixtureGiveMeOneStringToken(),fixtureGiveMeStringClass()},
-    {<<"clone">>,<<"asymmetric">>,fixtureGiveMeCloneToken(),fixtureGiveMeCloneClass()}
+    {<<"string">>,<<"inmutable">>,fixtures:giveMeOneStringToken(),fixtures:giveMeStringClass()},
+    {<<"clone">>,<<"asymmetric">>,fixtures:giveMeCloneToken(),fixtures:giveMeCloneClass()}
   ],
      
   ?assert(Expected =:= helper:classify_tokens(ClassMap,Tokens)). 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 mutate_tokens_test() ->
   ClassifiedTokens = [ 
-    {<<"string">>,<<"inmutable">>,fixtureGiveMeOneStringToken(),fixtureGiveMeStringClass()},
-    {<<"clone">>,<<"asymmetric">>,fixtureGiveMeCloneToken(),fixtureGiveMeCloneClass()}
+    {<<"string">>,<<"inmutable">>,fixtures:giveMeOneStringToken(),fixtures:giveMeStringClass()},
+    {<<"clone">>,<<"asymmetric">>,fixtures:giveMeCloneToken(),fixtures:giveMeCloneClass()}
   ],
   Expected = [{<<"<?php ">>,{<<"info">>,1},[]}, {<<"clone">>,{<<"info">>,1},[<<"=">>]}],
      
@@ -63,13 +63,13 @@ mutate_tokens_test() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classify_token_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
-  InmutableToken = fixtureGiveMeOneStringToken(),
-  InmutableClass = fixtureGiveMeStringClass(),
-  AsymmetricToken = fixtureGiveMeCloneToken(),
-  AsymmetricClass = fixtureGiveMeCloneClass(),
-  SymmetricToken = fixtureGiveMeAssignmentToken(),
-  SymmetricClass =fixtureGiveMeAssignmentClass(),
+  helper:load_classes(ClassMap, fixtures:giveMeAllClasses()),
+  InmutableToken = fixtures:giveMeOneStringToken(),
+  InmutableClass = fixtures:giveMeStringClass(),
+  AsymmetricToken = fixtures:giveMeCloneToken(),
+  AsymmetricClass = fixtures:giveMeCloneClass(),
+  SymmetricToken = fixtures:giveMeAssignmentToken(),
+  SymmetricClass =fixtures:giveMeAssignmentClass(),
   [
      ?assert({<<"string">>,<<"inmutable">>,InmutableToken,InmutableClass} =:= helper:classify_token(ClassMap,InmutableToken)),
      ?assert({<<"clone">>,<<"asymmetric">>,AsymmetricToken,AsymmetricClass} =:= helper:classify_token(ClassMap,AsymmetricToken)),
@@ -78,37 +78,37 @@ classify_token_test() ->
 
 classify_token_notoken_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  helper:load_classes(ClassMap, fixtures:giveMeAllClasses()),
   ?_assertException(error, _,helper:classify_token(ClassMap,[])).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 lookup_class_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  helper:load_classes(ClassMap, fixtures:giveMeAllClasses()),
   [{<<"clone">>,ClassItem}] = helper:lookup_class(ClassMap,<<"clone">>),
-  ?assert(ClassItem =:= fixtureGiveMeCloneClass()).
+  ?assert(ClassItem =:= fixtures:giveMeCloneClass()).
 
 lookup_class_unknown_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  helper:load_classes(ClassMap, fixtures:giveMeAllClasses()),
   ?assert([] =:= helper:lookup_class(ClassMap,<<"xxxx">>)).
   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load_one_class_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_one_class(ClassMap,fixtureGiveMeCloneClass()),
+  helper:load_one_class(ClassMap,fixtures:giveMeCloneClass()),
   [{<<"clone">>,ClassItem}] = helper:lookup_class(ClassMap,<<"clone">>),
-  ?assert(fixtureGiveMeCloneClass() =:= ClassItem).
+  ?assert(fixtures:giveMeCloneClass() =:= ClassItem).
 
   
 load_classes_test() ->
   ClassMap = helper:prepare(classes),
-  helper:load_classes(ClassMap, fixtureGiveMeAllClasses()),
+  helper:load_classes(ClassMap, fixtures:giveMeAllClasses()),
   [{<<"clone">>,ClassItem1}] = helper:lookup_class(ClassMap,<<"clone">>),
-  ?assert(fixtureGiveMeCloneClass() =:= ClassItem1),
+  ?assert(fixtures:giveMeCloneClass() =:= ClassItem1),
   [{<<"accessControl">>,ClassItem2}] = helper:lookup_class(ClassMap,<<"accessControl">>),
-  ?assert(fixtureGiveMeAccessControlClass() =:= ClassItem2).
+  ?assert(fixtures:giveMeAccessControlClass() =:= ClassItem2).
 
   
 load_classes_empty_test() ->
@@ -322,306 +322,68 @@ generate_c_test() ->
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mutate_token_one_string_test() ->
-    Token = fixtureGiveMeOneStringToken(),
-    Class = fixtureGiveMeStringClass(),
+    Token = fixtures:giveMeOneStringToken(),
+    Class = fixtures:giveMeStringClass(),
     ?assert({<<"<?php ">>,{<<"info">>,1},[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
  
 mutate_token_another_inmutable_test() ->
-    Token = fixtureGiveMeAnotherStringToken(),
-    Class = fixtureGiveMeStringClass(),
+    Token = fixtures:giveMeAnotherStringToken(),
+    Class = fixtures:giveMeStringClass(),
     ?assert({<<"$a">>,{<<"info">>,1},[]} =:= helper:mutate_token({<<"string">>,<<"inmutable">>,Token,Class})).
 
 mutate_token_one_asymmetric_test() ->
-    Token = fixtureGiveMeCloneToken(),
-    Class = fixtureGiveMeCloneClass(),
+    Token = fixtures:giveMeCloneToken(),
+    Class = fixtures:giveMeCloneClass(),
     ?assert({<<"clone">>,{<<"info">>,1},[<<"=">>]} =:= helper:mutate_token({<<"clone">>,<<"asymmetric">>,Token,Class})).
     
 mutate_token_another_asymmetric_test() ->
-    Token = fixtureGiveMeExitToken(),
-    Class = fixtureGiveMeFlowClass(),
+    Token = fixtures:giveMeExitToken(),
+    Class = fixtures:giveMeFlowClass(),
     ?assert({<<"exit">>,{<<"info">>,1},[<<"">>]} =:= helper:mutate_token({<<"flow">>,<<"asymmetric">>,Token,Class})).
 
 mutate_token_one_symmetric_test() ->
-    Token = fixtureGiveMeAssignmentToken(),
-    Class = fixtureGiveMeAssignmentClass(),
+    Token = fixtures:giveMeAssignmentToken(),
+    Class = fixtures:giveMeAssignmentClass(),
     Expected = {<<"=">>,{<<"info">>,0},[<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>]},
     ?assert(Expected =:= helper:mutate_token({<<"assignment">>,<<"symmetric">>,Token,Class})).
     
 mutate_token_bad_string_type_test() ->
-    Token = fixtureGiveMeOneStringToken(),
-    Class = fixtureGiveMeStringClass(),
+    Token = fixtures:giveMeOneStringToken(),
+    Class = fixtures:giveMeStringClass(),
     ?_assertException(error, _,helper:mutate_token({<<"string">>,<<"symmetric">>,Token,Class})).
    
 mutate_token_bad_clone_type_test() ->
-    Token = fixtureGiveMeCloneToken(),
-    Class = fixtureGiveMeCloneClass(),
+    Token = fixtures:giveMeCloneToken(),
+    Class = fixtures:giveMeCloneClass(),
     ?_assertException(error, _,helper:mutate_token({<<"clone">>,<<"asymmetric">>,Token,Class})).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 find_gen_asymmetric_test() ->
-    Genes = fixtureGiveMeCloneGenes(),
+    Genes = fixtures:giveMeCloneGenes(),
     Gen = helper:find_gen(<<"clone">>,Genes, <<"asymmetric">>),
     Expected = [<<"=">>],
     ?assert(Expected =:= Gen).
 
 find_another_gen_asymmetric_test() ->
-    Genes = fixtureGiveMeFlowGenes(),
+    Genes = fixtures:giveMeFlowGenes(),
     Gen = helper:find_gen(<<"exit">>,Genes, <<"asymmetric">>),
     Expected = [<<"">>],
     ?assert(Expected =:= Gen).
     
 find_gen_symmetric_test() ->
-    Genes = fixtureGiveMeAssignmentGenes(),
+    Genes = fixtures:giveMeAssignmentGenes(),
     Gen = helper:find_gen(<<"=">>,[{[{<<"gene">>,<<"=">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
     Expected = [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
     ?assert(Expected =:= Gen).
     
 find_gen_another_symmetric_test() ->
-    Genes = fixtureGiveMeAssignmentGenes(),
+    Genes = fixtures:giveMeAssignmentGenes(),
     Gen = helper:find_gen(<<"&=">>,[{[{<<"gene">>,<<"&=">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
     Expected = [<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>],
     ?assert(Expected =:= Gen).
     
 find_gen_symmetric_another_class_test() ->
-    Genes = fixtureGiveMeAccessControlGenes(),
+    Genes = fixtures:giveMeAccessControlGenes(),
     Gen = helper:find_gen(<<"private">>,[{[{<<"gene">>,<<"private">>},{<<"genePool">>,Genes}]}], <<"symmetric">>),
     Expected = [<<"public">>,<<"protected">>],
     ?assert(Expected =:= Gen).
-    
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                 GEN FIXTURES 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fixtureGiveMeAccessControlGenes() ->
-{[
-  {<<"name">>,<<"accessControl">>},
-  {<<"type">>,<<"symmetric">>},
-  {<<"genePool">>,Genes}
- ]} = fixtureGiveMeAccessControlClass(),
-   Genes.
-
-fixtureGiveMeAssignmentGenes() ->
-{[
-  {<<"name">>,<<"assignment">>},
-  {<<"type">>,<<"symmetric">>},
-  {<<"genePool">>,Genes}
- ]} = fixtureGiveMeAssignmentClass(),
-   Genes.
-
-fixtureGiveMeCloneGenes() ->
-{[
-  {<<"name">>,<<"clone">>},
-  {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,Genes}
-  ]} = fixtureGiveMeCloneClass(),
-   Genes.
-
-fixtureGiveMeFlowGenes() ->
-{[
-  {<<"name">>,<<"flow">>},
-  {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,Genes}
- ]} = fixtureGiveMeFlowClass(),
-   Genes.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                 CLASS FIXTURES 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fixtureGiveMeCloneClass() ->
-{[
-  {<<"name">>,<<"clone">>},
-  {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,
-    [{[{<<"gene">>,<<"clone">>}, {<<"genePool">>,[<<"=">>]}]}]
-  }]}.
-
-fixtureGiveMeFlowClass() ->
-{[
-  {<<"name">>,<<"flow">>},
-  {<<"type">>,<<"asymmetric">>},
-  {<<"genes">>,[
-    {[{<<"gene">>,<<"exit">>},
-      {<<"genePool">>,[<<"">>]}]},
-    {[{<<"gene">>,<<"break">>},
-      {<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-    {[{<<"gene">>,<<"return">>},
-      {<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]},
-    {[{<<"gene">>,<<"continue">>},
-      {<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]}
-  ]}]}.
-
-fixtureGiveMeAccessControlClass() ->
-{[{<<"name">>,<<"accessControl">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"public">>,<<"private">>,<<"protected">>]}]}.
-
-fixtureGiveMeStringClass() ->
-{[{<<"name">>,<<"string">>},
-   {<<"type">>,<<"inmutable">>},
-   {<<"genes">>,[]}
-   ]}.
-
-fixtureGiveMeAssignmentClass() ->
-{[{<<"name">>,<<"assignment">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,
-     <<"|=">>,<<"+=">>]}]}.
-
-fixtureGiveMeAllClasses() ->
-[{[{<<"name">>,<<"string">>},
-   {<<"type">>,<<"inmutable">>},
-   {<<"genes">>,[]}
-   ]},
- {[{<<"name">>,<<"clone">>},
-   {<<"type">>,<<"asymmetric">>},
-   {<<"genes">>,[
-      {[{<<"gene">>,<<"clone">>},{<<"genePool">>,[<<"=">>]}]}
-    ]
-   }
-  ]},
- {[{<<"name">>,<<"flow">>},
-   {<<"type">>,<<"asymmetric">>},
-   {<<"genes">>,[
-      {[{<<"gene">>,<<"break">>},
-        {<<"genePool">>,[<<"">>,<<"continue">>,<<"exit">>,<<"return">>]}]},
-      {[{<<"gene">>,<<"continue">>},
-        {<<"genePool">>,[<<"">>,<<"break">>,<<"exit">>,<<"return">>]}]},
-      {[{<<"gene">>,<<"exit">>},
-        {<<"genePool">>,[<<"">>]}]},
-      {[{<<"gene">>,<<"return">>},
-        {<<"genePool">>,[<<"">>,<<"break">>,<<"continue">>,<<"exit">>]}]}
-    ]
-   }
-  ]},
- {[{<<"name">>,<<"arithmetic">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"&">>,<<"/">>,<<"-">>,<<"%">>,<<"*">>,<<"|">>,<<"+">>,
-     <<"^">>]}]},
- {[{<<"name">>,<<"bitwise">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,[<<">>">>,<<"<<">>]}]},
- {[{<<"name">>,<<"typeCasting">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"boolean">>,<<"integer">>,<<"double">>,<<"object">>,
-     <<"string">>]}]},
- {[{<<"name">>,<<"logical">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"&&">>,<<"||">>,<<"and">>,<<"or">>,<<"xor">>]}]},
- {[{<<"name">>,<<"incrementing">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,[<<"++">>,<<"--">>]}]},
- {[{<<"name">>,<<"comparisson">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"==">>,<<">=">>,<<"===">>,<<"!=">>,<<"!==">>,<<"<=">>]}]},
- {[{<<"name">>,<<"accessControl">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"public">>,<<"private">>,<<"protected">>]}]},
- {[{<<"name">>,<<"bitwiseAssignment">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,[<<"<<=">>,<<">>=">>,<<"^=">>]}]},
- {[{<<"name">>,<<"assignment">>},
-   {<<"type">>,<<"symmetric">>},
-   {<<"genePool">>,
-    [<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"=">>,<<"%=">>,<<"*=">>,
-     <<"|=">>,<<"+=">>]}]}].
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                 TOKEN FIXTURES 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-     
-fixtureGiveMeOneStringToken() ->
-{[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"<?php ">>},
-   {<<"info">>,1}]}.
-
-fixtureGiveMeAnotherStringToken() ->
-{[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"$a">>},
-   {<<"info">>,1}]}.
-
-fixtureGiveMeCloneToken() ->
-{[{<<"class">>,<<"clone">>},
-   {<<"value">>,<<"clone">>},
-   {<<"info">>,1}]}.
-
-fixtureGiveMeExitToken() ->
-{[{<<"class">>,<<"flow">>},
-   {<<"value">>,<<"exit">>},
-   {<<"info">>,1}]}.
-
-fixtureGiveMeAssignmentToken()->   
- {[{<<"class">>,<<"assignment">>},
-   {<<"value">>,<<"=">>},
-   {<<"info">>,0}]}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                 FULL PROGRAM FIXTURES 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fixtureGiveMeCloneProgram() ->
-[{[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"<?php ">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"$a">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"assignment">>},
-   {<<"value">>,<<"=">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"clone">>},
-   {<<"value">>,<<"clone">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"(">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"$b">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<")">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<";">>},
-   {<<"info">>,0}]}].
-
-   
-fixtureGiveMeSimpleProgram() ->
-[{[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"<?php ">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"$a">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"assignment">>},
-   {<<"value">>,<<"=">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"1">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<";">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"$a">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"assignment">>},
-   {<<"value">>,<<"=">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"inmutable1">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"arithmetic">>},
-   {<<"value">>,<<"+">>},
-   {<<"info">>,0}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<"1">>},
-   {<<"info">>,1}]},
- {[{<<"class">>,<<"string">>},
-   {<<"value">>,<<";">>},
-   {<<"info">>,0}]}].

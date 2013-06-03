@@ -9,15 +9,6 @@
 %   statistics(runtime),
 %   statistics(wall_clock),
 
-%
-% Source = read json source 
-% [ Classes,SourceTokens ]= convert to terms(Source)
-% load (Classes)
-% ClassifiedTokens = classify_every_token(SourceTokens)
-% MutatedTokens = mutate every token(ClassifiedTokens)
-% Mutations = generate(MutatedTokens)
-% save terms_to_json(Mutations)
-
 mutate_tokens(Tokens) ->
   [mutate_token(Token) || Token <- Tokens].
   
