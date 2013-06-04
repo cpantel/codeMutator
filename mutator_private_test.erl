@@ -32,8 +32,16 @@ helloworld_test()->
     MutationsJson = mutator:mutate_source("test/fixtures/helloworld.php.json"),
     
     ?assert(Expected =:= MutationsJson).
-    
-    
+
+% simplecode_test()->
+% 
+% 
+%     Expected = "[[{\"value\":\"<?php \",\"info\":1},{\"value\":\"print\",\"info\":1},{\"value\":\"(\",\"info\":0},{\"value\":\"\\\"Hello, world!\\\"\",\"info\":1},{\"value\":\")\",\"info\":0},{\"value\":\";\",\"info\":0}]]",
+%     
+%     MutationsJson = mutator:mutate_source("test/php/SimpleCode.php.json"),
+%     
+%     ?assert(Expected =:= MutationsJson).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classify_tokens_test() ->
   ClassMap = mutator:prepare(classes),

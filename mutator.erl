@@ -4,21 +4,33 @@
   print/1
 ]).
 
-
+debug(Msg)->
+   io:format(Msg).
+   
+debug(Format,Elems) ->
+   io:format(Format,Elems).
+   
 %   statistics(runtime),
 %   statistics(wall_clock),
 print(Filename)->
+    %mutate_source(Filename).
     io:format("~s~n", [mutate_source(Filename)]).
 
 mutate_source(Filename) ->
+    debug("starting~n"),    
     {ok, Source} = file:read_file(Filename),
-   
+    debug("file read~n"),    
     {[{<<"classes">>,Classes},{<<"tokens">>, SourceTokens}]} =  mutator:json_to_term(Source),
+    debug("json termized~n"),    
     ClassMap = mutator:prepare(classes),
     mutator:load_classes(ClassMap, Classes),
+    debug("classes loaded~n"),
     ClassifiedTokens = mutator:classify_tokens(ClassMap,SourceTokens),
+    debug("tokens classified~n"),
     MutatedTokens = mutator:mutate_tokens(ClassifiedTokens),
+    debug("tokens mutated~n"),    
     Mutations = mutator:generate(MutatedTokens),
+    debug("mutations generated~n"),    
     mutator:term_to_json(Mutations).
 
 mutate_tokens(Tokens) ->
@@ -29,6 +41,7 @@ classify_tokens(ClassMap,Tokens)->
 
 
 classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
+  debug("classifying ... ~n",[]),
   [{TokenClass,ClassItem}]=lookup_class(ClassMap,TokenClass),
   {[{<<"name">>,TokenClass},{<<"type">>,Type},_]}=ClassItem,
   {TokenClass,Type,Token,ClassItem}.
@@ -129,6 +142,7 @@ load_classes(ClassMap,[Class| Classes]) ->
   load_classes(ClassMap,Classes).
 
 lookup_class(ClassMap,Class) ->
+  debug("lookup class: ~s~n",[Class]),
   ets:lookup(ClassMap,Class).
 
 prepare(Ets) ->
