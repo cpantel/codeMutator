@@ -1,6 +1,5 @@
 mutator.beam: mutator.erl
 	erlc +export_all mutator.erl
-
 	
 mutator_private_test.beam: mutator_private_test.erl
 	erlc mutator_private_test.erl

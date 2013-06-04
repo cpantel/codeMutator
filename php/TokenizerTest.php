@@ -67,7 +67,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
             array('class'=>'string',   'value'=>';',      'info'=>0),
             array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'assignment',  'value'=>'=',      'info'=>0),
-            array('class'=>'typeCasting', 'value'=>'(int)',  'info'=>1),
+            array('class'=>'typeCasting', 'value'=>'(integer)',  'info'=>1),
             array('class'=>'string',   'value'=>'$a',     'info'=>1),
             array('class'=>'arithmetic',  'value'=>'+',      'info'=>0),
             array('class'=>'string',   'value'=>'1',      'info'=>1),

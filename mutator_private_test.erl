@@ -28,14 +28,9 @@ full_without_tokens_test()->
 
 helloworld_test()->
     Expected = "[[{\"value\":\"<?php \",\"info\":1},{\"value\":\"print\",\"info\":1},{\"value\":\"(\",\"info\":0},{\"value\":\"\\\"Hello, world!\\\"\",\"info\":1},{\"value\":\")\",\"info\":0},{\"value\":\";\",\"info\":0}]]",
-    ClassMap = mutator:prepare(classes),
-    {ok, Source} = file:read_file("test/fixtures/helloworld.php.json"),
-    {[{<<"classes">>,Classes},{<<"tokens">>, SourceTokens}]} =  mutator:json_to_term(Source),
-    mutator:load_classes(ClassMap, Classes),
-    ClassifiedTokens = mutator:classify_tokens(ClassMap,SourceTokens),
-    MutatedTokens = mutator:mutate_tokens(ClassifiedTokens),
-    Mutations = mutator:generate(MutatedTokens),
-    MutationsJson = mutator:term_to_json(Mutations),
+    
+    MutationsJson = mutator:mutate_source("test/fixtures/helloworld.php.json"),
+    
     ?assert(Expected =:= MutationsJson).
     
     

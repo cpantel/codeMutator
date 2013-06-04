@@ -129,7 +129,7 @@ class Tokenizer {
     public function tokenize($source){
         $tokens = array();
         foreach(token_get_all($source) as $token) {
-            $new_token = $this->classify($token);
+            $new_token = $this->classify($this->unalias($token));
             $tokens[]=$new_token;
         }
         return $tokens;

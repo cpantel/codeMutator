@@ -1,13 +1,25 @@
 -module(mutator).
 -export([
-  prepare/1,
-  load_classes/2,
-  mutate_token/1,
-  generate/1
+  mutate_source/1,
+  print/1
 ]).
+
 
 %   statistics(runtime),
 %   statistics(wall_clock),
+print(Filename)->
+    io:format("~s~n", [mutate_source(Filename)]).
+
+mutate_source(Filename) ->
+    {ok, Source} = file:read_file(Filename),
+   
+    {[{<<"classes">>,Classes},{<<"tokens">>, SourceTokens}]} =  mutator:json_to_term(Source),
+    ClassMap = mutator:prepare(classes),
+    mutator:load_classes(ClassMap, Classes),
+    ClassifiedTokens = mutator:classify_tokens(ClassMap,SourceTokens),
+    MutatedTokens = mutator:mutate_tokens(ClassifiedTokens),
+    Mutations = mutator:generate(MutatedTokens),
+    mutator:term_to_json(Mutations).
 
 mutate_tokens(Tokens) ->
   [mutate_token(Token) || Token <- Tokens].
@@ -20,13 +32,6 @@ classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
   [{TokenClass,ClassItem}]=lookup_class(ClassMap,TokenClass),
   {[{<<"name">>,TokenClass},{<<"type">>,Type},_]}=ClassItem,
   {TokenClass,Type,Token,ClassItem}.
-
-% mutate(ClassMap, [], Accum) ->
-% 
-% mutate(ClassMap, [Mutations | TheRest], Accum) ->
-% 
-% accumulate every single token
-% when a list of tokens is found, fire a single mutation for every one
 
 generate_the_rest(Tokens) ->
    generate_the_rest(Tokens,[]).
