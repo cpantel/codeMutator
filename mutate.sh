@@ -4,6 +4,11 @@ NAME=EmptyClass
 NAME=SortFunction
 NAME=SimpleCode
 
+NAME=DobleClone
+NAME=TripleClone
+
+NAME=Clone
+
 PRG=$NAME.php
 
 SOURCE=$BASE/$PRG
@@ -25,7 +30,7 @@ echo "==ok"
 echo "==Running erl -noshell -s mutator print $TOKENS -s init stop > $MUTATIONS"
 # 
 # 
-erl -noshell -s mutator print $TOKENS -s init stop ;#> $MUTATIONS
+erl -noshell -s mutator print $TOKENS -s init stop > $MUTATIONS
 
 RESULT=$?
 if [ $RESULT -ne  0 ]; then

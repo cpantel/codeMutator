@@ -5,10 +5,10 @@
 ]).
 
 debug(Msg)->
-   io:format(Msg).
+   debug(Msg,[]).
    
-debug(Format,Elems) ->
-   io:format(Format,Elems).
+debug(Format,Values) ->
+   io:format(standard_error,Format,Values).
    
 %   statistics(runtime),
 %   statistics(wall_clock),
@@ -28,7 +28,8 @@ mutate_source(Filename) ->
     ClassifiedTokens = mutator:classify_tokens(ClassMap,SourceTokens),
     debug("tokens classified~n"),
     MutatedTokens = mutator:mutate_tokens(ClassifiedTokens),
-    debug("tokens mutated~n"),    
+    debug("tokens mutated~n"),
+    debug("~p", [MutatedTokens]),
     Mutations = mutator:generate(MutatedTokens),
     debug("mutations generated~n"),    
     mutator:term_to_json(Mutations).
@@ -41,7 +42,7 @@ classify_tokens(ClassMap,Tokens)->
 
 
 classify_token(ClassMap,Token={[{<<"class">>,TokenClass}|_]}) ->
-  debug("classifying ... ~n",[]),
+  %debug("classifying ... ~n",[]),
   [{TokenClass,ClassItem}]=lookup_class(ClassMap,TokenClass),
   {[{<<"name">>,TokenClass},{<<"type">>,Type},_]}=ClassItem,
   {TokenClass,Type,Token,ClassItem}.
@@ -74,6 +75,8 @@ fix([]) ->
   [];
 fix(Tokens)->
    Levels = depth(Tokens),
+   debug("DEPTH: ~w~n",[Levels]),
+   debug("FIXING: ~n~p", [Tokens]),
    case Levels of
      0->[[Tokens]];
      1->[Tokens];
