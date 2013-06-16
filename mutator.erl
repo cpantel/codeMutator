@@ -51,55 +51,33 @@ generate_the_rest(Tokens) ->
    generate_the_rest(Tokens,[]).
 
 generate_the_rest([],Accum) ->
-   lists:reverse(Accum);
+   {set ,lists:reverse(Accum)};
+
 generate_the_rest([{Value,Info,_Pool }|[]],Accum) ->
    generate_the_rest([],[{Value,Info}|Accum]);
 generate_the_rest([{Value,Info,_Pool }|TheRest],Accum) ->
    generate_the_rest(TheRest,[{Value,Info}|Accum]).
 
-depth(L) ->
-  depth(L,0).
-  
-depth([H|_],Accum)->
-   depth(H,Accum + 1);
-depth([],Accum)->
-   Accum +1;
-depth(_,Accum) ->
-   Accum.
+unset({set,X})->X.
 
-fix([[[]]]) ->
-   [];
-fix([[]]) ->   
-  [];
-fix([]) ->  
-  [];
-fix(Tokens)->
-   Levels = depth(Tokens),
-   debug("DEPTH: ~w~n",[Levels]),
-   debug("FIXING: ~n~p", [Tokens]),
-   case Levels of
-     0->[[Tokens]];
-     1->[Tokens];
-     2->Tokens;
-     3->[R]=Tokens,
-        R
-   end.
-
-% normalizar([L = [[_|_]|_]]) -> L;
-%   normalizar(L) -> L.
-
+fix(TokenSets={set,_})->
+   [unset(TokenSets)];
+fix(TokenSets) ->
+   [ unset(Sets)  || Sets <-   lists:flatten(TokenSets) ]. 
+   
 generate(Tokens) ->
+   %lists:flatten(generate(Tokens,[])).
    fix(generate(Tokens,[])).
 %  normalizar(generate(Tokens,[])).
 
 generate([],[]) ->
    [];
 generate([],Accum) ->
-   lists:reverse(Accum);
-generate([{Token,Info,[]}],Accum) ->  
-   generate([],[{Token,Info}|Accum]);
-generate([{Token,Info,[]}| TheRest],Accum) ->  
-   generate(TheRest,[{Token,Info}|Accum]);
+   {set ,lists:reverse(Accum)};
+generate([{Value,Info,[]}],Accum) ->  
+   generate([],[{Value,Info}|Accum]);
+generate([{Value,Info,[]}| TheRest],Accum) ->  
+   generate(TheRest,[{Value,Info}|Accum]);
 generate([{Value,Info,Pool }|TheRest],Accum) ->
    [ generate(TheRest,[{Value,Info} |Accum]) | [generate_the_rest(TheRest,[{Gen,Info}|Accum]) || Gen <- Pool]].
    

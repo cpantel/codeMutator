@@ -25,13 +25,13 @@ full_without_tokens_test()->
       ?assert(fixtures:giveMeStringClass() =:= SecondClass)
     ].
     
-
 helloworld_test()->
     Expected = "[[{\"value\":\"<?php \",\"info\":1},{\"value\":\"print\",\"info\":1},{\"value\":\"(\",\"info\":0},{\"value\":\"\\\"Hello, world!\\\"\",\"info\":1},{\"value\":\")\",\"info\":0},{\"value\":\";\",\"info\":0}]]",
     
     MutationsJson = mutator:mutate_source("test/fixtures/helloworld.php.json"),
     
     ?assert(Expected =:= MutationsJson).
+    
 %pasar a shunit?
 simpleclone_test()-> 
      MutationsJson = mutator:mutate_source("test/php/Clone.php.json").
@@ -130,20 +130,20 @@ load_classes_empty_test() ->
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 generate_the_rest_last_test() ->
-    ?assert([] =:= mutator:generate_the_rest([])).
+    ?assert({set,[]} =:=mutator:generate_the_rest([])).
 
 generate_the_rest_one_token_test() ->
-    ?assert([{<<"inmutable1">>,{<<"info">>,1}}] =:= mutator:generate_the_rest([{<<"inmutable1">>,{<<"info">>,1},[]}])).
+    ?assert({set,[{<<"inmutable1">>,{<<"info">>,1}}]} =:= mutator:generate_the_rest([{<<"inmutable1">>,{<<"info">>,1},[]}])).
 
 generate_the_rest_two_tokens_test() ->
-    ?assert([{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}] =:= mutator:generate_the_rest([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}])).
+    ?assert({set,[{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]} =:= mutator:generate_the_rest([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}])).
 
 generate_the_rest_three_tokens_test() ->
-    Expected = [
+    Expected = {set,[
       {<<"inmutable1">>,{<<"info">>,1}},
       {<<"inmutable2">>,{<<"info">>,1}},
       {<<"inmutable3">>,{<<"info">>,1}}
-    ], 
+    ]}, 
     Tokens = [
       {<<"inmutable1">>,{<<"info">>,1},[]},
       {<<"inmutable2">>,{<<"info">>,1},[]},
@@ -152,12 +152,12 @@ generate_the_rest_three_tokens_test() ->
     ?assert(Expected=:= mutator:generate_the_rest(Tokens)).
 
 generate_the_rest_two_tokens_and_accum_test() ->
-    Expected = [
+    Expected = {set,[
       {<<"inmutable1">>,{<<"info">>,1}},
       {<<"inmutable2">>,{<<"info">>,1}},
       {<<"inmutable3">>,{<<"info">>,1}},
       {<<"inmutable4">>,{<<"info">>,1}}
-    ],
+    ]},
     Tokens = [
        {<<"inmutable3">>,{<<"info">>,1},[]},
        {<<"inmutable4">>,{<<"info">>,1},[]}
@@ -169,12 +169,12 @@ generate_the_rest_two_tokens_and_accum_test() ->
     ?assert( Expected =:= mutator:generate_the_rest(Tokens,Accum)).
     
 generate_the_rest_with_mutable_tokens_and_accum_test() ->
-    Expected = [
+    Expected ={set,[
       {<<"inmutable1">>,{<<"info">>,1}},
       {<<"inmutable2">>,{<<"info">>,1}},
       {<<"mutable1">>,{<<"info">>,1}},
       {<<"mutable2">>,{<<"info">>,1}}
-    ],
+    ]},
     Tokens = [
       {<<"mutable1">>,{<<"info">>,1},[<<"$mutation1">>,<<"$mutation2">>]},
       {<<"mutable2">>,{<<"info">>,1},[<<"$mutation3">>,<<"$mutation4">>]}
@@ -184,114 +184,6 @@ generate_the_rest_with_mutable_tokens_and_accum_test() ->
       {<<"inmutable1">>,{<<"info">>,1}}
     ],
     ?assert( Expected =:= mutator:generate_the_rest(Tokens,Accum)).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fix_empty_test()->
-    ?assert([] =:= mutator:fix([])).
-    
-fix_double_empty_test()->
-    ?assert([] =:= mutator:fix([[]])).
-    
-fix_inmutable_test()->
-   [
-   ?assert([[a]] =:= mutator:fix([[a]])),
-   ?assert([[a],[b]] =:= mutator:fix([[a],[b]])),
-   ?assert([[a],[b],[c]] =:= mutator:fix([[a],[b],[c]]))
-   ].
-    
-fix_mutated_test()->
-   [
-   ?assert( [[a]        ] =:= mutator:fix( [ [ [a]         ] ] )),
-   ?assert( [[a],[b]    ] =:= mutator:fix( [ [ [a],[b]     ] ] )),
-   ?assert( [[a],[b],[c]] =:= mutator:fix( [ [ [a],[b],[c] ] ] ))
-   ].
-
-fix_inmutable_mutated_test() ->
-   [
-   ?assert([[{a}]] =:= mutator:fix([[[{a}]]])),
-   ?assert([[{a}],[{b}]] =:= mutator:fix([[[{a}],[{b}]]]))
-   ].
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-depth_test() ->
-  [
-    ?assert( 1 =:= mutator:depth([])),
-    ?assert( 2 =:= mutator:depth([[]])),
-    ?assert( 3 =:= mutator:depth([[[]]])),
-    ?assert(2 =:= mutator:depth([[a]])),
-    ?assert(2 =:= mutator:depth([[a],[b]])) ,
-    ?assert(2 =:= mutator:depth([[a],[b],[c]])),
-    ?assert(3 =:= mutator:depth([[[a]]])),
-    ?assert(3 =:= mutator:depth([[[a],[b]]])) ,
-    ?assert(3 =:= mutator:depth([[[a],[b],[c]]])),
-    ?assert(1 =:= mutator:depth([{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]) ),
-    ?assert(2 =:= mutator:depth([
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
-    ] ) ),
-    ?assert(2 =:= mutator:depth([
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
-    ] ) ),
-    ?assert(2 =:= mutator:depth([
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
-    ] ) ),
-    ?assert(3 =:= mutator:depth([[
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
-    ]] ) ),
-    ?assert(3 =:= mutator:depth([[
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
-    ]] ) ),
-    ?assert(3 =:= mutator:depth([[
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
-      [{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
-    ]] ) )
-%     ?assert(3 =:= mutator:depth(
-%        [
-%          [
-%            [{<<"=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"&">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"/">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"-">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"%">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"*">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"|">>,{<<"info">>,0}}],
-%            [{<<"=">>,{<<"info">>,0}},{<<"^">>,{<<"info">>,0}}]
-%          ],
-%          [{<<"&=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<".=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<"/=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<"-=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<"%=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<"*=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<"|=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}],
-%          [{<<"+=">>,{<<"info">>,0}},{<<"+">>,{<<"info">>,0}}]
-%         ]
-% % %  
-% % % [
-% % %   [
-% % %     [
-% % %       [
-% % %         {<<"<?php\n">>,{<<"info">>,1}},{<<"clone">>,{<<"info">>,2}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,2}},{<<"clone">>,{<<"info">>,3}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,3}},{<<"clone">>,{<<"info">>,4}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}}
-% % %       ],
-% % %       [
-% % %         {<<"<?php\n">>,{<<"info">>,1}},{<<"clone">>,{<<"info">>,2}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,2}},{<<"clone">>,{<<"info">>,3}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,3}},{<<"=">>,{<<"info">>,4}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}}
-% % %       ]
-% % %     ],
-% % %     [
-% % %       {<<"<?php\n">>,{<<"info">>,1}},{<<"clone">>,{<<"info">>,2}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,2}},{<<"=">>,{<<"info">>,3}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,3}},{<<"clone">>,{<<"info">>,4}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}}
-% % %     ]
-% % %   ],
-% % %   [
-% % %     {<<"<?php\n">>,{<<"info">>,1}},{<<"=">>,{<<"info">>,2}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,2}},{<<"clone">>,{<<"info">>,3}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}},{<<"\n">>,{<<"info">>,3}},{<<"clone">>,{<<"info">>,4}},{<<"(">>,{<<"info">>,0}},{<<")">>,{<<"info">>,0}},{<<";">>,{<<"info">>,0}}
-% % %   ]
-% % % ] 
-    
-    ].
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 generate_2_empty_test()->
       Accum = [],
@@ -300,22 +192,24 @@ generate_2_empty_test()->
 generate_2_empty_accum_one_inmutable_token_test()->
    Accum =[],
    [
-    ?assert([{<<"inmutable1">>,{<<"info">>,1}}] =:= mutator:generate( [ {<<"inmutable1">>,{<<"info">>,1},[]} ],Accum ) ),
-    ?assert([{<<"inmutable2">>,{<<"info">>,1}}] =:= mutator:generate([{<<"inmutable2">>,{<<"info">>,1},[]}],Accum))
+    ?assert({set,[{<<"inmutable1">>,{<<"info">>,1}}]} =:= mutator:generate( [ {<<"inmutable1">>,{<<"info">>,1},[]} ],Accum ) ),
+    ?assert({set,[{<<"inmutable2">>,{<<"info">>,1}}]} =:= mutator:generate([{<<"inmutable2">>,{<<"info">>,1},[]}],Accum))
    ].
 
 generate_2_many_inmutable_token_test()->
    Accum1 =[{<<"inmutable1">>,{<<"info">>,1}}],
    Accum2 =[{<<"inmutable2">>,{<<"info">>,1}},{<<"inmutable1">>,{<<"info">>,1}}],
+   Expected1 = {set,[{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]},
+   Expected2 = {set,[{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}},{<<"inmutable3">>,{<<"info">>,1}}]},
    [
-    ?assert([{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}] =:= mutator:generate([{<<"inmutable2">>,{<<"info">>,1},[]}],Accum1)),
-    ?assert([{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}},{<<"inmutable3">>,{<<"info">>,1}}] =:= mutator:generate([{<<"inmutable3">>,{<<"info">>,1},[]}],Accum2))
+    ?assert(Expected1 =:= mutator:generate([{<<"inmutable2">>,{<<"info">>,1},[]}],Accum1)),
+    ?assert(Expected2 =:= mutator:generate([{<<"inmutable3">>,{<<"info">>,1},[]}],Accum2))
    ].
 
 generate_2_two_inmutable_token_test()->
    Accum = [],
    [
-    ?assert([{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}] 
+    ?assert({set,[{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]} 
        =:= mutator:generate([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}],Accum))
    ].
 
@@ -326,7 +220,6 @@ generate_many1_inmutable_token_test()->
      =:= 
        mutator:generate([{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}])
     ).
-
   
 generate_many2_inmutable_token_test()->
     ?assert(
@@ -339,25 +232,29 @@ generate_many2_inmutable_token_test()->
 generate_empty_test()->
     ?assert([] =:= mutator:generate([])).
 
-generate_mutable_test() ->
+generate_M_test() ->
     ?assert( [[{<<"clone">>,{<<"info">>,1}}],[{<<"=">>,{<<"info">>,1}}]]
        =:= mutator:generate([{<<"clone">>,{<<"info">>,1},[<<"=">>]}])).
 
-generate_mutable_mixed_test() ->
+generate_MI_test() ->
     Expected = [[{<<"clone">>,{<<"info">>,1}},{<<"inmutable1">>,{<<"info">>,1}}], [{<<"=">>,{<<"info">>,1}},  {<<"inmutable1">>,{<<"info">>,1}}]],
     Tokens = [{<<"clone">>,{<<"info">>,1},[<<"=">>]},{<<"inmutable1">>,{<<"info">>,1},[]}],
     ?assert(Expected =:= mutator:generate( Tokens )).
 
-generate_a_test() ->
-    Expected = [[{<<"clone">>,{<<"info">>,1}},{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],[{<<"=">>,{<<"info">>,1}},{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]],
+generate_MII_test() ->
+    Expected = [
+       [{<<"clone">>,{<<"info">>,1}},{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
+       [{<<"=">>,{<<"info">>,1}},{<<"inmutable1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]
+    ],
     Tokens = [{<<"clone">>,{<<"info">>,1},[<<"=">>]},{<<"inmutable1">>,{<<"info">>,1},[]},{<<"inmutable2">>,{<<"info">>,1},[]}],
     ?assert(Expected =:= mutator:generate( Tokens )).
 
-generate_b_test() ->
+generate_II_test() ->
     Expected = [[{<<"inmutable1">>,{<<"info">>,1}},{<<"clone">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],[{<<"inmutable1">>,{<<"info">>,1}},{<<"=">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}]],
     Tokens = [{<<"inmutable1">>,{<<"info">>,1},[]},{<<"clone">>,{<<"info">>,1},[<<"=">>]},{<<"inmutable2">>,{<<"info">>,1},[]}],
     ?assert(Expected =:= mutator:generate( Tokens )). 
-generate_c_test() ->
+
+generate_IMI_test() ->
     Expected = [
        [{<<"inmutable1">>,{<<"info">>,1}},{<<"mutable">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
        [{<<"inmutable1">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"inmutable2">>,{<<"info">>,1}}],
@@ -366,6 +263,54 @@ generate_c_test() ->
     Tokens = [{<<"inmutable1">>,{<<"info">>,1},[]},{<<"mutable">>,{<<"info">>,1},[<<"mutation1">>,<<"mutation2">>]},{<<"inmutable2">>,{<<"info">>,1},[]}],
     ?assert(Expected =:= mutator:generate( Tokens )).
 
+generate_MI_bis_test() ->  
+    Expected = [
+         [{<<"mutable">>,{<<"info">>,1}},{<<"inmutable">>,{<<"info">>,1}}],
+         [{<<"mutation">>,{<<"info">>,1}},{<<"inmutable">>,{<<"info">>,1}}]
+    ],
+    
+    Tokens = [
+               {<<"mutable">>,{<<"info">>,1},[<<"mutation">>]},
+               {<<"inmutable">>,{<<"info">>,1},[]}
+             ],
+    ?assert(Expected =:= mutator:generate( Tokens )).
+
+generate_mm_test() ->  
+    Expected = [
+         [{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
+         [{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
+         [{<<"mutation1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}]
+
+    ],
+
+    Tokens = [
+               {<<"mutable1">>,{<<"info">>,1},[<<"mutation1">>]},
+               {<<"mutable2">>,{<<"info">>,1},[<<"mutation2">>]}
+             ],
+    ?assert(Expected =:= mutator:generate( Tokens )).
+
+% generate_imm_test() ->  
+%     Expected = [
+%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
+%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
+%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
+%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutabl2">>,{<<"info">>,1}}]
+%     ],
+%     
+%     Got = [
+%         [
+%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
+%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}]
+%         ],
+%         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}]
+%          ],
+%     Tokens = [
+%                {<<"inmutable">>,{<<"info">>,1},[]},
+%                {<<"mutable1">>,{<<"info">>,1},[<<"mutation1">>]},
+%                {<<"mutable2">>,{<<"info">>,1},[<<"mutation2">>]}
+%              ],
+%     ?assert(Expected =:= mutator:generate( Tokens )).
+             
 % generate_d_test() ->
 %     Tokens = [
 % %        {<<"<?php\n">>,{<<"info">>,1},[]}, 
