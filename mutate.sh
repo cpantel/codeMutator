@@ -18,6 +18,10 @@ OUTPUT_DIR=$BASE/mutations
 OUTPUT_TEMPLATE=$OUTPUT_DIR/$NAME
 # 
 
+echo "==Sanity check and timeout sampling"
+#phpunit $TEST 
+TIMEOUT=2
+
 echo "==Running php php/tokenize.php $SOURCE $TOKENS"
 php php/tokenize.php $SOURCE $TOKENS
 
@@ -65,18 +69,21 @@ for FILE in $OUTPUT_TEMPLATE* ; do
 done
 
 
+
 echo "==Running tests"
 cp $SOURCE $SOURCE.bak
 
 for FILE in $OUTPUT_TEMPLATE* ; do
   cp $FILE $SOURCE
-  phpunit $TEST >/dev/null 2>&1
+  timeout $TIMEOUT phpunit $TEST >/dev/null 2>&1
   RESULT=$?
-  if [ $RESULT -ne  0 ]; then
+  if [ $RESULT -eq  0 ]; then
+     echo "TEST PASS, THATS BAD -- $FILE"
+  elif [ $RESULT -eq  124 ]; then
+     echo "TEST TIMEOUT, CHECK YOURSELF -- $FILE"
+  else
      echo "TEST BROKEN, THATS GOOD -- $FILE"
      rm $FILE
-  else
-     echo "TEST PASS, THATS BAD -- $FILE"
   fi
 done
 
