@@ -8,12 +8,15 @@ fixtures.beam: fixtures.erl
 	erlc +export_all fixtures.erl
 
 shunit_test:
+	@echo "======== SH TEST ========"
 	@echo "TBI"
 
 php_test:
+	@echo "======== PHP TEST ========"
 	phpunit --colors php
 
 erl_test: mutator_private_test.beam mutator.beam fixtures.beam
+	@echo "======== ERL TEST ========"
 	erl -noshell -s mutator_private_test test -s init stop
 
 full_test: php_test erl_test shunit_test
