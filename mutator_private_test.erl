@@ -275,7 +275,7 @@ generate_MI_bis_test() ->
              ],
     ?assert(Expected =:= mutator:generate( Tokens )).
 
-generate_mm_test() ->  
+generate_MM_test() ->  
     Expected = [
          [{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
          [{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
@@ -289,45 +289,35 @@ generate_mm_test() ->
              ],
     ?assert(Expected =:= mutator:generate( Tokens )).
 
-% generate_imm_test() ->  
-%     Expected = [
-%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
-%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
-%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
-%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutabl2">>,{<<"info">>,1}}]
-%     ],
-%     
-%     Got = [
-%         [
-%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
-%          [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}]
-%         ],
-%         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}]
-%          ],
-%     Tokens = [
-%                {<<"inmutable">>,{<<"info">>,1},[]},
-%                {<<"mutable1">>,{<<"info">>,1},[<<"mutation1">>]},
-%                {<<"mutable2">>,{<<"info">>,1},[<<"mutation2">>]}
-%              ],
-%     ?assert(Expected =:= mutator:generate( Tokens )).
-             
-% generate_d_test() ->
-%     Tokens = [
-% %        {<<"<?php\n">>,{<<"info">>,1},[]}, 
-% %        {<<"$elem">>,{<<"info">>,2},[]},
-% %        {<<" ">>,{<<"info">>,2},[]},
-%        {<<"=">>, {<<"info">>,0},[<<"&=">>,<<".=">>,<<"/=">>,<<"-=">>,<<"%=">>,<<"*=">>,<<"|=">>,<<"+=">>]},
-% %        {<<" ">>,{<<"info">>,2},[]},
-% %        {<<"$elem">>,{<<"info">>,2},[]},
-% %        {<<" ">>,{<<"info">>,2},[]},
-%        {<<"+">>,{<<"info">>,0},[<<"&">>,<<"/">>,<<"-">>,<<"%">>,<<"*">>,<<"|">>,<<"^">>]}
-% % %        {<<" ">>,{<<"info">>,2},[]},
-% % %        {<<"1">>,{<<"info">>,2},[]},
-% % %        {<<";">>,{<<"info">>,0},[]},
-% % %        {<<"\n">>,{<<"info">>,2},[]},
-%        
-%     ],
-%     mutator:generate( Tokens).
+generate_IMM_test() ->  
+    Expected = [
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}],
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>,{<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}}],
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutable2">>,{<<"info">>,1}}]
+        ],
+    Tokens = [
+               {<<"inmutable">>,{<<"info">>,1},[]},
+               {<<"mutable1">>,{<<"info">>,1},[<<"mutation1">>]},
+               {<<"mutable2">>,{<<"info">>,1},[<<"mutation2">>]}
+             ],
+    ?assert(Expected =:= mutator:generate(Tokens )).
+
+generate_IMMM_test() ->  
+    Expected = [
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>, {<<"info">>,1}},{<<"mutable2">>, {<<"info">>,1}},{<<"mutable3">>,{<<"info">>,1}}],
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>, {<<"info">>,1}},{<<"mutable2">>, {<<"info">>,1}},{<<"mutation3">>,{<<"info">>,1}}],
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutable1">>, {<<"info">>,1}},{<<"mutation2">>,{<<"info">>,1}},{<<"mutable3">>,{<<"info">>,1}}],
+         [{<<"inmutable">>,{<<"info">>,1}},{<<"mutation1">>,{<<"info">>,1}},{<<"mutable2">>, {<<"info">>,1}},{<<"mutable3">>,{<<"info">>,1}}]
+        ],
+    Tokens = 
+    [
+               {<<"inmutable">>,{<<"info">>,1},[]},
+               {<<"mutable1">>,{<<"info">>,1},[<<"mutation1">>]},
+               {<<"mutable2">>,{<<"info">>,1},[<<"mutation2">>]},
+               {<<"mutable3">>,{<<"info">>,1},[<<"mutation3">>]}
+             ],
+    ?assert(Expected =:= mutator:generate(Tokens )).
+
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mutate_token_one_string_test() ->
