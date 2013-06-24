@@ -3,3 +3,6 @@
 .~lock*#
 *.beam
 *.dump
+*bak
+trash
+*.pyc

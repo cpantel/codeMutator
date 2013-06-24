@@ -33,8 +33,8 @@ helloworld_test()->
     ?assert(Expected =:= MutationsJson).
     
 %pasar a shunit?
-simpleclone_test()-> 
-     MutationsJson = mutator:mutate_source("test/php/Clone.php.json").
+% % simpleclone_test()-> 
+% %      MutationsJson = mutator:mutate_source("test/php/Clone.php.json").
 
 %pasar a shunit?
 % doubleclone_test()-> 
