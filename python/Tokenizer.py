@@ -5,11 +5,7 @@ from collections import OrderedDict
 
 
 class Tokenizer:
-    
-    def __init__(self,source):
-        self.tokens=[]
-        self.source=source
-    
+
     @classmethod    
     def newFromFile(object,fileName):
         return Tokenizer(open(fileName,'r'))
@@ -18,11 +14,89 @@ class Tokenizer:
     def newFromString(object,string):
         return Tokenizer(StringIO.StringIO(string))
     
+    def buildMapper(self):
+        for description in self.opClassDescription:
+           for gene in description['genePool']:
+               self.opMapper["'" + gene + "'" ] = description['name']
+
+    def __init__(self,source):
+        self.source = source
+        self.tokens = []
+        self.opMapper = {}
+        self.opClassDescription = [
+          OrderedDict([
+            ('name','arithmetic'),
+            ('type','symmetric'),
+            ('genePool', ['/','-','*','+'])
+          ]),
+          OrderedDict([
+            ('name','logical'),
+            ('type','symmetric'),
+            ('genePool', ['and','or'])
+          ])
+
+        ]
+        self.classDescription =  [
+            OrderedDict([
+              ('name','NUMBER'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','ENDMARKER'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','NAME'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','OP'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','NEWLINE'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','INDENT'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','DEDENT'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','NL'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','COMMENT'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ]),
+            OrderedDict([
+              ('name','STRING'),
+              ('type', 'inmutable'),
+              ('genes',[])
+            ])
+
+        ]
+        self.buildMapper()         
+    
     def handle_token(self, type, token, (srow,scol), (erow,ecol), line):
-        entry=OrderedDict([ \
-        ('class',tokenize.tok_name[type]), \
-        ('value',repr(token)), \
-        ('info',[srow,scol,erow,ecol])])
+        entry=OrderedDict([ 
+           ('class',tokenize.tok_name[type]), 
+           ('value',repr(token)), 
+           ('info',[srow,scol,erow,ecol])
+        ])
         
         self.tokens.append(entry)
 
@@ -31,9 +105,15 @@ class Tokenizer:
         return self.tokens
         
     def classify(self):
-        pass
-    
-   
+      for index in range(len(self.tokens)):
+        tokenType = filter (lambda x:x['name'] == self.tokens[index]['class'], self.classDescription)
+        if tokenType == []:
+          raise NameError(self.tokens[index]['class'])
+        if tokenType[0]['name'] == 'OP' :
+          key =  self.tokens[index]['value']
+          if self.opMapper.has_key(key):
+            self.tokens[index]['class']=self.opMapper[key]
+
     def toJson(self):
         return json.dumps(self.tokens)
       
