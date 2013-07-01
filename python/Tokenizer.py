@@ -114,14 +114,17 @@ class Tokenizer:
           if self.opMapper.has_key(key):
             self.tokens[index]['class']=self.opMapper[key]
 
-    def toJson(self):
+    def tokensToJson(self):
         return json.dumps(self.tokens)
       
         
     def untok(self):
         print tokenize.untokenize(self.tokens)      
 
-
+    def dump(self):
+       self.tokenize()
+       self.classify()
+       return json.dumps(OrderedDict([("classes", self.classDescription + self.opClassDescription) ,( "tokens",self.tokens)]))
 #t = Tokenizer()
 #t.tokenize('src.py')
 #t.untok()

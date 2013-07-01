@@ -19,14 +19,11 @@ class TestTokenizer(unittest.TestCase):
             OrderedDict([('class', 'ENDMARKER'), ('value', "''"), ('info', [2, 0, 2, 0])])
         ]
 
-
         tok = Tokenizer.newFromString("a = 1 + 2")
-#        tok = Tokenizer.newFromFile('python/Tokenizer.py')
         tok.tokenize()
-#        print tok.tokens
         tok.classify()
         self.assertEquals(expected, tok.tokens)
-#        print  tok.toJson()
+#        print  tok.tokensToJson()
         
     def test_fileConstructor(self):
         tok = Tokenizer.newFromFile('test/python/Code.py')
@@ -52,21 +49,32 @@ class TestTokenizer(unittest.TestCase):
         self.assertEquals(firstExpected,firstToken)
         self.assertEquals(lastExpected,lastToken)
 
-    def test_string_toJson(self):
-        expected = '[{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "OP", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]'
+    def test_string_tokensToJson(self):
+        expected = '[{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "arithmetic", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]'
         tok = Tokenizer.newFromString("a = 1 + 2")
         tok.tokenize()
-        got = tok.toJson()
+        tok.classify()
+        got = tok.tokensToJson()
         self.assertEquals(expected, got)
 
-    def test_file_toJson(self):
-        expected = '[{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "OP", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]'
+    def test_file_tokensToJson(self):
+        expected = '[{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "arithmetic", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]'
         tok = Tokenizer.newFromFile('test/python/Code.py')
         tok.tokenize()
-        got = tok.toJson()
+        tok.classify()
+        got = tok.tokensToJson()
         self.assertEquals(expected, got)
 
-#    def test_classify(self):
+    def test_dump(self):
+        expected = '{"classes": [{"name": "NUMBER", "type": "inmutable", "genes": []}, {"name": "ENDMARKER", "type": "inmutable", "genes": []}, {"name": "NAME", "type": "inmutable", "genes": []}, {"name": "OP", "type": "inmutable", "genes": []}, {"name": "NEWLINE", "type": "inmutable", "genes": []}, {"name": "INDENT", "type": "inmutable", "genes": []}, {"name": "DEDENT", "type": "inmutable", "genes": []}, {"name": "NL", "type": "inmutable", "genes": []}, {"name": "COMMENT", "type": "inmutable", "genes": []}, {"name": "STRING", "type": "inmutable", "genes": []}, {"name": "arithmetic", "type": "symmetric", "genePool": ["/", "-", "*", "+"]}, {"name": "logical", "type": "symmetric", "genePool": ["and", "or"]}], "tokens": [{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "arithmetic", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]}'
+
+        tok = Tokenizer.newFromString("a = 1 + 2")
+        got = tok.dump()
+        self.assertEquals(expected, got)
+ 
+
+
+#    de ftest_classify(self):
 #        tok = Tokenizer.newFromString(code)
 
 
