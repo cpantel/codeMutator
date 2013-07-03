@@ -1,4 +1,4 @@
-BASE=test/php
+BASE=$(pwd)/test/php
 
 
 NAME=SortFunction
@@ -69,9 +69,8 @@ if [ $RESULT -ne  0 ]; then
   exit 1
 fi
 echo "=== OK"
-
-echo "== Running erl -noshell -s mutator print $TOKENS -s init stop > $MUTATIONS"
-erl -noshell -s mutator print $TOKENS -s init stop > $MUTATIONS 2>/dev/null
+echo "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS"
+erl -noshell -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS 2>/dev/null
 
 RESULT=$?
 if [ $RESULT -ne  0 ]; then

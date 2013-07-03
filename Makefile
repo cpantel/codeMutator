@@ -1,11 +1,11 @@
-ebin/mutator.beam: mutator.erl
-	erlc +export_all mutator.erl -o ebin/mutator.beam
+ebin/mutator.beam: core/mutator.erl
+	erlc  -o ebin +export_all core/mutator.erl
 	
-ebin/mutator_private_test.beam: mutator_private_test.erl
-	erlc mutator_private_test.erl -o mutator_private_test.beam
+ebin/mutator_private_test.beam: core/test/mutator_private_test.erl
+	erlc -o ebin core/test/mutator_private_test.erl
 
-ebin/fixtures.beam: fixtures.erl
-	erlc +export_all fixtures.erl -o fixtures.beam
+ebin/fixtures.beam: core/test/fixtures.erl
+	erlc -o ebin +export_all core/test/fixtures.erl
 
 shunit_test:
 	@echo "======== SH TEST ========"
@@ -26,5 +26,6 @@ erl_test: ebin/mutator_private_test.beam ebin/mutator.beam ebin/fixtures.beam
 full_test: php_test erl_test shunit_test python_test
 
 clean:
+	rm -f erl_crash.dump
 	rm -f ebin/*.beam
 	rm -f python/*.pyc
