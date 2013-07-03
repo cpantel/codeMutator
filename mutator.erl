@@ -8,12 +8,10 @@ debug(Msg)->
    debug(Msg,[]).
    
 debug(Format,Values) ->
-   io:format(standard_error,Format,Values).
-   
-%   statistics(runtime),
-%   statistics(wall_clock),
+%   io:format(standard_error,Format,Values).
+    ok.
+
 print(Filename)->
-    %mutate_source(Filename).
     io:format("~s~n", [mutate_source(Filename)]).
 
 mutate_source(Filename) ->
@@ -143,15 +141,4 @@ repack_file(File) ->
   
 repack_token({Value, Info}) ->
   {[{<<"value">>,Value},Info]}.
-
-  
-% get_all_lines(Device, Accum) ->
-%     case io:get_line(Device, "") of
-%         eof  -> file:close(Device), hd(lists:reverse(Accum));
-%         Line -> get_all_lines(Device, [Line|Accum])
-%     end.
-% 
-% read_file(FileName) ->
-%     {ok, Device} = file:open(FileName, [read]),
-%     get_all_lines(Device, []).
 
