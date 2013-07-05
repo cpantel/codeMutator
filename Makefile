@@ -9,15 +9,16 @@ ebin/fixtures.beam: core/test/fixtures.erl
 
 shunit_test:
 	@echo "======== SH TEST ========"
-	@echo "TBI"
+	./modules/test_mutate.sh	
 
 python_test:
 	@echo "====== PYTHON TEST ======="
 	python python/TestTokenizer.py 2>&1
+	python python/TestRender.py 
 	
 php_test:
 	@echo "======== PHP TEST ========"
-	phpunit --colors php
+	phpunit --colors modules/php
 
 erl_test: ebin/mutator_private_test.beam ebin/mutator.beam ebin/fixtures.beam
 	@echo "======== ERL TEST ========"

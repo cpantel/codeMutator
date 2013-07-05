@@ -1,9 +1,13 @@
+function output {
+    echo $* >> $REPORT
+    echo $*
+}
+
+# check quotes in every variable
 BASE=$(pwd)/test/php
 
 
-NAME=SortFunction
-NAME=Timeout
-NAME=Tokenizer
+NAME="$1"
 
 
 PRG=$NAME.php
@@ -14,9 +18,8 @@ TEST=$BASE/${NAME}Test.php
 MUTATIONS=$BASE/mutations/$PRG.mutations.json
 OUTPUT_DIR=$BASE/mutations
 OUTPUT_TEMPLATE=$OUTPUT_DIR/$NAME
-
+REPORT=$OUTPUT_DIR/report.txt
 STATS_TIME_START=$( date "+%s" )
-# 
 
 echo "== Sanity check and timeout sampling"
 php -l $SOURCE >/dev/null 2>&1
@@ -61,7 +64,7 @@ TIMEOUT="${VALUE}${UNIT}"
 echo "=== Timeout: $TIMEOUT"
 
 echo "== Running php php/tokenize.php $SOURCE $TOKENS"
-php php/tokenize.php $SOURCE $TOKENS
+php modules/php/tokenize.php $SOURCE $TOKENS
 
 RESULT=$?
 if [ $RESULT -ne  0 ]; then
@@ -81,7 +84,7 @@ echo "=== OK"
 
 # 
 echo "== Running php php/mutate.php $MUTATIONS $OUTPUT_TEMPLATE"
-php php/mutate.php $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
+php modules/php/render.php $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
 #    echo "--- $LINE"
 done
@@ -145,29 +148,21 @@ done
 cp $SOURCE.bak $SOURCE
 
 
-# for FILE in $OUTPUT_TEMPLATE* ; do
-#     echo "--- $FILE"
-#     diff $SOURCE $FILE -y
-#     echo
-# done
-
-
-
-
 STATS_TIME_STOP=$( date "+%s" )
 STATS_TIME=$(( $STATS_TIME_STOP - $STATS_TIME_START))
 
 echo
-echo "SOURCE                 $SOURCE"
-echo "TEST                   $TEST"
-echo "TIMEOUT                $TIMEOUT"
-echo "LINES                  $STATS_LINES"
-echo "TIME                   $STATS_TIME seconds"
-echo "STATS_TOTAL_MUTATIONS  $STATS_TOTAL_MUTATIONS"
-echo "STATS_WRONG_MUTATIONS  $STATS_WRONG_MUTATIONS"
-echo "STATS_GOOD_MUTATIONS   $STATS_GOOD_MUTATIONS"
-echo "STATS_TIMEOUTS         $STATS_TIMEOUTS"
-echo "STATS_DEADS            $STATS_DEADS"
-echo "STATS_SURVIVORS        $STATS_SURVIVORS"
-echo
-echo -e $DIFFS
+rm -f $REPORT
+output "SOURCE                 $SOURCE"
+output "TEST                   $TEST"
+output "TIMEOUT                $TIMEOUT"
+output "LINES                  $STATS_LINES"
+output "TIME                   $STATS_TIME seconds"
+output "STATS_TOTAL_MUTATIONS  $STATS_TOTAL_MUTATIONS"
+output "STATS_WRONG_MUTATIONS  $STATS_WRONG_MUTATIONS"
+output "STATS_GOOD_MUTATIONS   $STATS_GOOD_MUTATIONS"
+output "STATS_TIMEOUTS         $STATS_TIMEOUTS"
+output "STATS_DEADS            $STATS_DEADS"
+output "STATS_SURVIVORS        $STATS_SURVIVORS"
+
+output -e "$DIFFS"
