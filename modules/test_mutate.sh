@@ -18,4 +18,25 @@ diff /home/carlos/proyectos/codeMutator/test/php/SortFunction.php /home/carlos/p
 
 }
 
+function testPython() {
+    EXPECTED="SOURCE /home/carlos/proyectos/codeMutator/test/python/SortFunction.py
+TEST /home/carlos/proyectos/codeMutator/test/python/SortFunctionTest.py
+LINES 
+STATS_TOTAL_MUTATIONS 
+STATS_WRONG_MUTATIONS 
+STATS_GOOD_MUTATIONS 
+STATS_DEADS 
+STATS_SURVIVORS 
+
+diff /home/carlos/proyectos/codeMutator/test/php/SortFunction.php /home/carlos/proyectos/codeMutator/test/php/mutations/SortFunction.aaa.php ;#SURVIVOR"
+    ./modules/mutate_py.sh SortFunction ; #>/dev/null 2>&1 
+
+    RESULT=$(grep -ve TIMEOUT -ve TIME.*seconds ./test/python/mutations/report.txt)
+
+    assertEquals "$EXPECTED" "$RESULT"
+
+}
+
+
+
 . shunit2

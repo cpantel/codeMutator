@@ -13,8 +13,8 @@ shunit_test:
 
 python_test:
 	@echo "====== PYTHON TEST ======="
-	python python/TestTokenizer.py 2>&1
-	python python/TestRender.py 
+	python modules/python/TestTokenizer.py 2>&1
+	python modules/python/TestRender.py 
 	
 php_test:
 	@echo "======== PHP TEST ========"
