@@ -11,7 +11,7 @@ class TestRender(unittest.TestCase):
 
         
     def test_fileConstructor(self):
-        render = Render.newFromFile('test/Code.json')
+        render = Render.newFromFile('modules/python/test/Code.json')
 
 
         

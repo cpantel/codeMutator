@@ -9,7 +9,7 @@ def run():
   f = open(outputFile, 'w')
 
   tok = Tokenizer.newFromFile(inputFile)
-  gto =  tok.dump()
+  got =  tok.dump()
 #  f.write(tok.dump())
  
 if __name__ == '__main__':
