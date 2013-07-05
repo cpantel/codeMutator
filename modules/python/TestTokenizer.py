@@ -8,7 +8,7 @@ class TestTokenizer(unittest.TestCase):
     def test_stringConstructor(self):
         tok = Tokenizer.newFromString("a = 1 + 2")
 
-    def Xtest_classify(self):
+    def test_classify(self):
         expected = [
             OrderedDict([('class', 'NAME'), ('value', "'a'"), ('info', [1, 0, 1, 1])]),
             OrderedDict([('class', 'OP'), ('value', "'='"), ('info', [1, 2, 1, 3])]),
@@ -31,13 +31,13 @@ class TestTokenizer(unittest.TestCase):
 
         self.assertEquals('arithmetic',tok.opMapper["'+'"])
 
-    def Xtest_file_tokenize(self):
+    def test_file_tokenize(self):
         expected = [OrderedDict([('class', 'NAME'), ('value', "'a'"), ('info', [1, 0, 1, 1])]), OrderedDict([('class', 'OP'), ('value', "'='"), ('info', [1, 2, 1, 3])]), OrderedDict([('class', 'NUMBER'), ('value', "'1'"), ('info', [1, 4, 1, 5])]), OrderedDict([('class', 'OP'), ('value', "'+'"), ('info', [1, 6, 1, 7])]), OrderedDict([('class', 'NUMBER'), ('value', "'2'"), ('info', [1, 8, 1, 9])]), OrderedDict([('class', 'ENDMARKER'), ('value', "''"), ('info', [2, 0, 2, 0])])]
         tok = Tokenizer.newFromFile('test/python/Code.py')
         got = tok.tokenize()
         self.assertEquals(expected,got)
         
-    def Xtest_simple_tokenize2(self):
+    def test_simple_tokenize2(self):
         lastExpected = OrderedDict([('class', 'ENDMARKER'), ('value', "''"), ('info', [2, 0, 2, 0])])
         firstExpected = OrderedDict([('class', 'NAME'), ('value', "'a'"), ('info', [1, 0, 1, 1])])
         tok = Tokenizer.newFromString("a = 1 + 2")
@@ -48,7 +48,7 @@ class TestTokenizer(unittest.TestCase):
         self.assertEquals(firstExpected,firstToken)
         self.assertEquals(lastExpected,lastToken)
 
-    def Xtest_string_tokensToJson(self):
+    def test_string_tokensToJson(self):
         expected = '[{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "arithmetic", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]'
         tok = Tokenizer.newFromString("a = 1 + 2")
         tok.tokenize()
@@ -64,10 +64,10 @@ class TestTokenizer(unittest.TestCase):
         got = tok.tokensToJson()
         self.assertEquals(expected, got)
 
-    def Xtest_dump(self):
+    def test_dump(self):
         expected = '{"classes": [{"name": "NUMBER", "type": "inmutable", "genes": []}, {"name": "ENDMARKER", "type": "inmutable", "genes": []}, {"name": "NAME", "type": "inmutable", "genes": []}, {"name": "OP", "type": "inmutable", "genes": []}, {"name": "NEWLINE", "type": "inmutable", "genes": []}, {"name": "INDENT", "type": "inmutable", "genes": []}, {"name": "DEDENT", "type": "inmutable", "genes": []}, {"name": "NL", "type": "inmutable", "genes": []}, {"name": "COMMENT", "type": "inmutable", "genes": []}, {"name": "STRING", "type": "inmutable", "genes": []}, {"name": "arithmetic", "type": "symmetric", "genePool": ["/", "-", "*", "+"]}, {"name": "logical", "type": "symmetric", "genePool": ["and", "or"]}], "tokens": [{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "arithmetic", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]}'
 
-        tok = Tokenizer.newFromString("a = 1 + 32")
+        tok = Tokenizer.newFromString("a = 1 + 2")
         got = tok.dump()
         self.assertEquals(expected, got)
  
