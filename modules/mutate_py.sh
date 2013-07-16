@@ -66,8 +66,8 @@ TIMEOUT="${VALUE}${UNIT}"
 
 echo "=== Timeout: $TIMEOUT"
 
-echo "== Running php php/tokenize.php $SOURCE $TOKENS"
-python modules/python/tokenize.php $SOURCE $TOKENS
+echo "== Running  python modules/python/tokenizeIt.py $SOURCE $TOKENS"
+python modules/python/tokenizeIt.py $SOURCE $TOKENS
 
 RESULT=$?
 if [ $RESULT -ne  0 ]; then
@@ -75,7 +75,7 @@ if [ $RESULT -ne  0 ]; then
   exit 1
 fi
 echo "=== OK"
-exit
+
 
 echo "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS"
 erl -noshell -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS 2>/dev/null
@@ -88,12 +88,13 @@ fi
 echo "=== OK"
 
 # 
-echo "== Running php php/mutate.php $MUTATIONS $OUTPUT_TEMPLATE"
-php modules/php/render.php $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
+echo "== Running python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE"
+python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
 #    echo "--- $LINE"
 done
 echo
+exit 
 
 RESULT=$?
 if [ $RESULT -ne  0 ]; then
@@ -113,8 +114,8 @@ STATS_SURVIVORS=0
 DIFFS=""
 
 echo "== Checking mutations syntax"
-for FILE in $OUTPUT_TEMPLATE*.php ; do
-    php -l $FILE >/dev/null 2>&1
+for FILE in $OUTPUT_TEMPLATE*.py ; do
+    python  $FILE >/dev/null 2>&1
     RESULT=$?
     STATS_TOTAL_MUTATIONS=$(( $STATS_TOTAL_MUTATIONS + 1 ))
     if [ $RESULT -ne  0 ]; then
@@ -131,9 +132,9 @@ done
 echo "== Running tests"
 cp $SOURCE $SOURCE.bak
 
-for FILE in $OUTPUT_TEMPLATE*.php ; do
+for FILE in $OUTPUT_TEMPLATE*.py ; do
   cp $FILE $SOURCE
-  timeout "$TIMEOUT" phpunit $TEST >/dev/null 2>&1
+  timeout "$TIMEOUT" python XXX $TEST >/dev/null 2>&1
   RESULT=$?
   if [ $RESULT -eq  0 ]; then
      echo "--- TEST PASS, THATS BAD -- $FILE"

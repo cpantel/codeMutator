@@ -56,7 +56,7 @@ class TestTokenizer(unittest.TestCase):
         got = tok.tokensToJson()
         self.assertEquals(expected, got)
 
-    def XtXest_file_tokensToJson(self):
+    def test_file_tokensToJson(self):
         expected = '[{"class": "NAME", "value": "\'a\'", "info": [1, 0, 1, 1]}, {"class": "OP", "value": "\'=\'", "info": [1, 2, 1, 3]}, {"class": "NUMBER", "value": "\'1\'", "info": [1, 4, 1, 5]}, {"class": "arithmetic", "value": "\'+\'", "info": [1, 6, 1, 7]}, {"class": "NUMBER", "value": "\'2\'", "info": [1, 8, 1, 9]}, {"class": "ENDMARKER", "value": "\'\'", "info": [2, 0, 2, 0]}]'
         tok = Tokenizer.newFromFile('test/python/Code.py')
         tok.tokenize()
