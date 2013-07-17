@@ -1,32 +1,28 @@
 import json
-#import StringIO
-#from collections import OrderedDict
-
 
 class Renderer:
 
-    #@classmethod    
-    #def newRendererFromString(object,string):
-        #tok = Tokenizer(StringIO.StringIO(string))
-        ##tok.initAsRenderer()
-        #return tok
+    @classmethod    
+    def newRendererFromString(object,string,outputMask):
+        rnd = Renderer(StringIO.StringIO(string),outputMask)
+        return rnd
 
     @classmethod    
-    def newRendererFromFile(object,fileName):
-        tok = Renderer(open(fileName,'r'))
-        #tok.initAsRenderer()
-        return tok
+    def newRendererFromFile(object,fileName, outputMask):
+        rnd = Renderer(open(fileName,'r'),outputMask)
+        return rnd
         
-    def __init__(self,source):
-        self.source = source 
+    def __init__(self,source,outputMask):
+        self.source = source
+        self.outputMask = outputMask
         
     def render(self):
         source = self.source
         json16 = json.load(source)
         json8 = self.convert(json16)
-        base = 'aaaaaa'
+        base = '.aaaaaa'
         for file in json8:
-            fileName = base + ".py"
+            fileName = self. outputMask + base + ".py"
             out = open(fileName, 'w')
             tokens=[]
             lineout=""
