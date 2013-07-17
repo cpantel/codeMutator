@@ -5,7 +5,7 @@ $outputDir = $argv[2];
 
 $mutations = json_decode(file_get_contents($inputFile));
 #var_dump($mutations);
-$version="aaa";
+$version="aaaaaa";
 foreach ($mutations as $mutation) {
    $out = "$outputDir.$version.php";
    $version++;

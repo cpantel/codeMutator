@@ -31,27 +31,40 @@ class Tokenizer:
         return tok
 
     def render(self):
-        #print json.load(self.source)
         source = self.source
         json16 = json.load(source)
-        #print json16
         json8 = self.convert(json16)
-        tokens=[]
-        for file in json16:
-            print "###### FILE #######"
+        base = 'aaaaaa'
+        for file in json8:
+            fileName = base + ".py"
+            out = open(fileName, 'w')
+            tokens=[]
+            lineout=""
+            indent = 0
+            
             for item in file:
                 type = item.get('info')[0]
                 value = item.get('value')[1:-1]
                 if (type == 'NEWLINE' or type == 'NL'):
-                   value = "\n"
-                line = [type,value]
-                tokens.append(line)
-            
-        #    tokens.append[line]
-        #[self.convert(element) for element in input]
-        print tokens
-        print tokenize.untokenize( tokens)
+                   out.write(lineout + "\n")
+                   lineout=" " * indent
+                else:
+                   if (type == 'INDENT'):
+                       indent += 1
+                       lineout=" " * indent
+                   elif (type == 'DEDENT'):
+                       indent -= 1
+                       lineout=" " * indent
+                   else:
+                       lineout += value + " "
+## it should be like this, but does not work                       
+#                line = [type,value]
+#                tokens.append(line)
+##            [self.convert(element) for element in input]
+#            print tokenize.untokenize( tokens)
 
+            out.close()
+            base = self.next_string(base) 
 
         
     def __init__(self,source):
@@ -161,6 +174,13 @@ class Tokenizer:
     def tokensToJson(self):
         return json.dumps(self.tokens)
         
+       
+    def dump(self):
+       self.tokenize()
+       print len(self.tokens)
+       self.classify()
+       print len(self.tokens)
+       return json.dumps(OrderedDict([("classes", self.classDescription + self.opClassDescription) ,( "tokens",self.tokens)]))
 
     # credit 956867 stackoverflow
     def convert(self, input):
@@ -171,11 +191,10 @@ class Tokenizer:
         if isinstance(input, unicode):
             return input.encode('utf-8')
         return input
-        
-    def dump(self):
-       self.tokenize()
-       self.classify()
-       return json.dumps(OrderedDict([("classes", self.classDescription + self.opClassDescription) ,( "tokens",self.tokens)]))
-#t = Tokenizer()
-#t.tokenize('src.py')
-#t.untok()
+
+    # credit 932506 stackoverflow
+    def next_string(self, s):
+        strip_zs=s.rstrip('z')
+        if strip_zs:
+            return strip_zs[:-1] + chr(ord(strip_zs[-1]) + 1 ) + 'a' * (len(s) - len(strip_zs))
+        return 'a' * (len(s) + 1)
