@@ -89,7 +89,7 @@ echo "=== OK"
 
 # 
 echo "== Running python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE"
-python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
+python modules/python/renderIt.py $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
 #    echo "--- $LINE"
 done

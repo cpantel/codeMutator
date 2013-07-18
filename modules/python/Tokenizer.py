@@ -38,6 +38,11 @@ class Tokenizer:
             ('name','logical'),
             ('type','symmetric'),
             ('genePool', ['and','or'])
+          ]),
+          OrderedDict([
+            ('name','comparisson'),
+            ('type','symmetric'),
+            ('genePool', ['<','>','<=','>=','==','!='])
           ])
 
         ]
@@ -115,7 +120,9 @@ class Tokenizer:
       for index in range(len(self.tokens)):
         tokenType = filter (lambda x:x['name'] == self.tokens[index]['class'], self.classDescription)
         if tokenType == []:
-          raise NameError(self.tokens[index]['class'])
+          tokenType = filter (lambda x:x['name'] == self.tokens[index]['class'], self.opClassDescription)  
+          if tokenType == []:
+            raise NameError(self.tokens[index]['class'])
         if tokenType[0]['name'] == 'OP' :
           key =  self.tokens[index]['value']
           if self.opMapper.has_key(key):
