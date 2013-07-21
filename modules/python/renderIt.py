@@ -6,7 +6,7 @@ def run():
 
   print inputFile
 
-  rnd = Renderer.newRendererFromFile(inputFile, outputMask)
+  rnd = Renderer.newFromFile(inputFile, outputMask)
   rnd.render()  
  
 if __name__ == '__main__':

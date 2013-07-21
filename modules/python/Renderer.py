@@ -3,12 +3,12 @@ import json
 class Renderer:
 
     @classmethod    
-    def newRendererFromString(object,string,outputMask):
+    def newFromString(object,string,outputMask):
         rnd = Renderer(StringIO.StringIO(string),outputMask)
         return rnd
 
     @classmethod    
-    def newRendererFromFile(object,fileName, outputMask):
+    def newFromFile(object,fileName, outputMask):
         rnd = Renderer(open(fileName,'r'),outputMask)
         return rnd
         
@@ -23,6 +23,7 @@ class Renderer:
         base = '.aaaaaa'
         for file in json8:
             fileName = self. outputMask + base + ".py"
+            print "####### " + base
             out = open(fileName, 'w')
             tokens=[]
             lineout=""
@@ -30,7 +31,7 @@ class Renderer:
             
             for item in file:
                 type = item.get('info')[0]
-                value = item.get('value')[1:-1]
+                value = item.get('value')
                 if (type == 'NEWLINE' or type == 'NL'):
                    out.write(lineout + "\n")
                    lineout=" " * indent
@@ -41,8 +42,14 @@ class Renderer:
                    elif (type == 'DEDENT'):
                        indent -= 1
                        lineout=" " * indent
+                   #elif (type == 'OP'):
+                       #lineout += value + " "
                    else:
                        lineout += value + " "
+                       
+
+                       
+                       
 ## it should be like this, but does not work                       
 #                line = [type,value]
 #                tokens.append(line)

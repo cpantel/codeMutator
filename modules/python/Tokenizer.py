@@ -23,7 +23,7 @@ class Tokenizer:
     def buildMapper(self):
         for description in self.opClassDescription:
            for gene in description['genePool']:
-               self.opMapper["'" + gene + "'" ] = description['name']
+               self.opMapper[gene] = description['name']
 
     def initAsTokenizer(self):
         self.tokens = []
@@ -32,7 +32,7 @@ class Tokenizer:
           OrderedDict([
             ('name','arithmetic'),
             ('type','symmetric'),
-            ('genePool', ['/','-','*','+'])
+            ('genePool', ["/","-","*","+"])
           ]),
           OrderedDict([
             ('name','logical'),
@@ -42,7 +42,7 @@ class Tokenizer:
           OrderedDict([
             ('name','comparisson'),
             ('type','symmetric'),
-            ('genePool', ['<','>','<=','>=','==','!='])
+            ('genePool', ["<",">","<=",">=","==","!="])
           ])
 
         ]
@@ -106,7 +106,7 @@ class Tokenizer:
 
         entry=OrderedDict([ 
            ('class',tokenize.tok_name[type]), 
-           ('value',repr(token)), 
+           ('value',repr(token)[1:-1]), 
            ('info',[tokenize.tok_name[type],srow,scol,erow,ecol])
         ])
         
@@ -120,11 +120,13 @@ class Tokenizer:
       for index in range(len(self.tokens)):
         tokenType = filter (lambda x:x['name'] == self.tokens[index]['class'], self.classDescription)
         if tokenType == []:
+          #raise NameError(self.tokens[index]['class'])
           tokenType = filter (lambda x:x['name'] == self.tokens[index]['class'], self.opClassDescription)  
           if tokenType == []:
             raise NameError(self.tokens[index]['class'])
         if tokenType[0]['name'] == 'OP' :
           key =  self.tokens[index]['value']
+         # print 'evaluando OP ' + key
           if self.opMapper.has_key(key):
             self.tokens[index]['class']=self.opMapper[key]
 

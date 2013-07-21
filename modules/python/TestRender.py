@@ -1,4 +1,4 @@
-from Render import Render
+from Renderer import Renderer
 import unittest
 from collections import OrderedDict
 
@@ -7,11 +7,11 @@ class TestRender(unittest.TestCase):
         pass
 
     def test_stringConstructor(self):
-        render = Render.newFromString("a = 1 + 2")
+        render = Renderer.newFromString("a = 1 + 2")
 
         
     def test_fileConstructor(self):
-        render = Render.newFromFile('modules/python/test/Code.json')
+        render = Renderer.newFromFile('modules/python/test/Code.json')
 
 
         
