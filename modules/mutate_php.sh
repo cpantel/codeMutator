@@ -88,7 +88,6 @@ echo "=== OK"
 echo "== Running php php/mutate.php $MUTATIONS $OUTPUT_TEMPLATE"
 php modules/php/render.php $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
-#    echo "--- $LINE"
 done
 echo
 

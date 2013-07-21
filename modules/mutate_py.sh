@@ -93,10 +93,9 @@ echo "=== OK"
 echo "== Running python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE"
 python modules/python/renderIt.py $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
-#    echo "--- $LINE"
 done
 echo
-exit 
+ 
 
 RESULT=$?
 if [ $RESULT -ne  0 ]; then
@@ -117,7 +116,7 @@ DIFFS=""
 
 echo "== Checking mutations syntax"
 for FILE in $OUTPUT_TEMPLATE*.py ; do
-    python  $FILE >/dev/null 2>&1
+    python -m py_compile $FILE >/dev/null 2>&1
     RESULT=$?
     STATS_TOTAL_MUTATIONS=$(( $STATS_TOTAL_MUTATIONS + 1 ))
     if [ $RESULT -ne  0 ]; then
@@ -130,13 +129,13 @@ for FILE in $OUTPUT_TEMPLATE*.py ; do
     fi
 done
 
-
 echo "== Running tests"
 cp $SOURCE $SOURCE.bak
 
 for FILE in $OUTPUT_TEMPLATE*.py ; do
   cp $FILE $SOURCE
-  timeout "$TIMEOUT" python XXX $TEST >/dev/null 2>&1
+  rm ${SOURCE}c
+  timeout "$TIMEOUT" python $TEST >/dev/null 2>&1
   RESULT=$?
   if [ $RESULT -eq  0 ]; then
      echo "--- TEST PASS, THATS BAD -- $FILE"

@@ -21,6 +21,14 @@ class TestSortClass(unittest.TestCase):
        sortClass.mySwap(0,1)
        self.assertEquals(expected,myArray)
 
-
+   def testMySort(self):
+       expected=[1,2]
+       myArray=[2,1]
+       sortClass = SortClass(myArray)
+       sortClass.mySort()
+       self.assertEquals(expected,sortClass.list)
+       
+       
+       
 if __name__ == '__main__':
     unittest.main()
