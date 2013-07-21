@@ -10,4 +10,4 @@ class SortClass:
 
   def mySort(self):
     if (self.list[0]>self.list[1]):
-      self.mySwap(self.list,0,1)
+      self.mySwap(0,1)
