@@ -14,7 +14,7 @@ shunit_test:
 python_test:
 	@echo "====== PYTHON TEST ======="
 	python modules/python/TestTokenizer.py 2>&1
-	python modules/python/TestRender.py 
+	#python modules/python/TestRenderer.py 
 	
 php_test:
 	@echo "======== PHP TEST ========"

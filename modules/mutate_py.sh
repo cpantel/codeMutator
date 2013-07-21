@@ -13,13 +13,15 @@ NAME="$1"
 PRG=$NAME.py
 
 SOURCE=$BASE/$PRG
-TOKENS=$BASE/$PRG.json
+TOKENS=$BASE/mutations/$PRG.seed.json
 TEST=$BASE/Test${NAME}.py
 MUTATIONS=$BASE/mutations/$PRG.mutations.json
 OUTPUT_DIR=$BASE/mutations
 OUTPUT_TEMPLATE=$OUTPUT_DIR/$NAME
 REPORT=$OUTPUT_DIR/report.txt
 STATS_TIME_START=$( date "+%s" )
+
+mkdir -p $OUTPUT_DIR
 
 echo "== Sanity check and timeout sampling"
 python -m py_compile $SOURCE >/dev/null 2>&1
