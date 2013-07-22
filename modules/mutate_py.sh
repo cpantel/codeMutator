@@ -140,11 +140,11 @@ for FILE in $OUTPUT_TEMPLATE*.py ; do
   if [ $RESULT -eq  0 ]; then
      echo "--- TEST PASS, THATS BAD -- $FILE"
      STATS_SURVIVORS=$(( $STATS_SURVIVORS + 1 ))
-     DIFFS="${DIFFS}\ndiff $SOURCE $FILE ;#SURVIVOR"
+     DIFFS="${DIFFS}\ndiff -w $SOURCE $FILE ;#SURVIVOR"
   elif [ $RESULT -eq  124 ]; then
      echo "--- TEST TIMEOUT, CHECK YOURSELF -- $FILE"
      STATS_TIMEOUTS=$(( $STATS_TIMEOUTS + 1 ))
-     DIFFS="${DIFFS}\ndiff $SOURCE $FILE ;#TIMEOUT"
+     DIFFS="${DIFFS}\ndiff -w $SOURCE $FILE ;#TIMEOUT"
   else
      echo "--- TEST BROKEN, THATS GOOD -- $FILE"
      rm $FILE
