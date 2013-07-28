@@ -9,7 +9,8 @@ ebin/fixtures.beam: core/test/fixtures.erl
 
 shunit_test:
 	@echo "======== SH TEST ========"
-	./modules/test_mutate.sh	
+	@echo "no implementado"
+	#./modules/test_mutate.sh	
 
 python_test:
 	@echo "====== PYTHON TEST ======="
