@@ -16,6 +16,8 @@ As soon as you clone, follow these steps:
  
  mv *beam ..
 
+ cd ../..
+ 
  # rm -rf erlang-json-eep-parser
 
  make full_test
