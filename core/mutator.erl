@@ -7,7 +7,7 @@
 debug(Msg)->
    debug(Msg,[]).
    
-debug(Format,Values) ->
+debug(_Format,_Values) ->
 %   io:format(standard_error,Format,Values).
     ok.
 

@@ -14,7 +14,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 full_without_tokens_test()->
-    ClassMap = mutator:prepare(classes),
+    mutator:prepare(classes),
     {ok, Source} = file:read_file("test/fixtures/classes.php.json"),
     {[{<<"classes">>,Classes},{<<"tokens">>, SourceTokens}]} =  mutator:json_to_term(Source),
     [ FirstClass| [SecondClass| _ ] ] = Classes,
