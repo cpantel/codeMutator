@@ -1,7 +1,11 @@
-function output {
-    echo $* >> $REPORT
-    echo $*
-}
+DIR=$(basename $(dirname $0))
+
+if [ -e "${PWD}/${DIR}/mutate.sh" ]; then
+    . "${PWD}/${DIR}/mutate.sh"
+else
+    echo not sourcing "${PWD}/${DIR}/mutate.sh"
+    exit 1
+fi
 
 # check quotes in every variable
 BASE=$(pwd)/test/python
@@ -21,37 +25,21 @@ OUTPUT_TEMPLATE=$OUTPUT_DIR/$NAME
 REPORT=$OUTPUT_DIR/report.txt
 STATS_TIME_START=$( date "+%s" )
 
-mkdir -p $OUTPUT_DIR
+prepareWorkspace $OUTPUT_DIR
 
 echo "== Sanity check and timeout sampling"
 python -m py_compile $SOURCE >/dev/null 2>&1
-RESULT=$?
-if [ $RESULT -ne  0 ]; then
-    echo "### Source syntax error: $SOURCE"
-    exit 1
-fi
-echo "=== Source syntax check ok: $SOURCE"
+checkResult "### Source syntax error: $SOURCE" 1 "=== Source syntax check ok: $SOURCE"
 
 python -m py_compile $TEST >/dev/null 2>&1
-RESULT=$?
-if [ $RESULT -ne  0 ]; then
-    echo "### Test syntax error: $TEST"
-    exit 1
-fi    
-echo "=== Test syntax check ok: $TEST"
+
+checkResult "### Test syntax error: $TEST" 1 "=== Test syntax check ok: $TEST"
 
 python $TEST 1>/dev/null 2>&1
-RESULT=$?
-if [ $RESULT -ne  0 ]; then
-    echo "### Reference test failed: $TEST"
-    exit 1
-fi    
-echo "=== Reference test ok: $TEST"
 
-
+checkResult "### Reference test failed: $TEST" 1  "=== Reference test ok: $TEST"
 
 RESPONSE=$(python $TEST  2>&1 | grep -e "Ran .* tests" | cut -d" " -f 5)
-echo $RESPONSE
 
 VALUE=$( echo $RESPONSE | cut -d"." -f 1)
 UNIT=s
@@ -68,42 +56,23 @@ TIMEOUT="${VALUE}${UNIT}"
 
 echo "=== Timeout: $TIMEOUT"
 
-echo "== Running  python modules/python/tokenizeIt.py $SOURCE $TOKENS"
+debug "== Running  python modules/python/tokenizeIt.py $SOURCE $TOKENS"
 python modules/python/tokenizeIt.py $SOURCE $TOKENS
 
-RESULT=$?
-if [ $RESULT -ne  0 ]; then
-  echo "### Tokenization failed"
-  exit 1
-fi
-echo "=== OK"
+checkResult "Tokenization failed"
 
-
-echo "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS"
+debug "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS"
 erl -noshell -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS 2>/dev/null
 
-RESULT=$?
-if [ $RESULT -ne  0 ]; then
-  echo "### FAIL"
-  exit 1
-fi
-echo "=== OK"
+checkResult "### Mutation pool failed" 1 "=== Mutation pool OK"
 
-# 
-echo "== Running python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE"
+debug "== Running python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE"
 python modules/python/renderIt.py $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
 done
 echo
  
-
-RESULT=$?
-if [ $RESULT -ne  0 ]; then
-  echo "### FAIL"
-  exit 1
-fi
-echo "=== OK"
-
+checkResult  "### Mutation rendering FAIL" 1 "=== Mutation rendering OK"
 
 STATS_LINES=$( wc -l $SOURCE | cut -d" " -f1 )
 STATS_TOTAL_MUTATIONS=0
