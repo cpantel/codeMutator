@@ -1,3 +1,5 @@
+#!/bin/bash
+
 DIR=$(basename $(dirname $0))
 
 if [ -e "${PWD}/${DIR}/mutate.sh" ]; then
@@ -10,16 +12,16 @@ fi
 # check quotes in every variable
 BASE=$(pwd)/test/python
 
+EXT="py"
 
 NAME="$1"
 
+PRG=$NAME.${EXT}
 
-PRG=$NAME.py
-
-SOURCE=$BASE/$PRG
-TOKENS=$BASE/mutations/$PRG.seed.json
-TEST=$BASE/Test${NAME}.py
-MUTATIONS=$BASE/mutations/$PRG.mutations.json
+SOURCE_FILE=$BASE/$PRG
+TOKEN_FILE=$BASE/mutations/$PRG.seed.json
+TEST_FILE=$BASE/Test${NAME}.${EXT}
+MUTATIONS_FILE=$BASE/mutations/$PRG.mutations.json
 OUTPUT_DIR=$BASE/mutations
 OUTPUT_TEMPLATE=$OUTPUT_DIR/$NAME
 REPORT=$OUTPUT_DIR/report.txt
@@ -28,18 +30,18 @@ STATS_TIME_START=$( date "+%s" )
 prepareWorkspace $OUTPUT_DIR
 
 echo "== Sanity check and timeout sampling"
-python -m py_compile $SOURCE >/dev/null 2>&1
-checkResult "### Source syntax error: $SOURCE" 1 "=== Source syntax check ok: $SOURCE"
+python -m py_compile $SOURCE_FILE >/dev/null 2>&1
+checkResult "### Source syntax error: $SOURCE_FILE" 1 "=== Source syntax check ok: $SOURCE_FILE"
 
-python -m py_compile $TEST >/dev/null 2>&1
+python -m py_compile $TEST_FILE >/dev/null 2>&1
 
-checkResult "### Test syntax error: $TEST" 1 "=== Test syntax check ok: $TEST"
+checkResult "### Test syntax error: $TEST_FILE" 1 "=== Test syntax check ok: $TEST_FILE"
 
-python $TEST 1>/dev/null 2>&1
+python $TEST_FILE 1>/dev/null 2>&1
 
-checkResult "### Reference test failed: $TEST" 1  "=== Reference test ok: $TEST"
+checkResult "### Reference test failed: $TEST_FILE" 1  "=== Reference test ok: $TEST_FILE"
 
-RESPONSE=$(python $TEST  2>&1 | grep -e "Ran .* tests" | cut -d" " -f 5)
+RESPONSE=$(python $TEST_FILE  2>&1 | grep -e "Ran .* tests" | cut -d" " -f 5)
 
 VALUE=$( echo $RESPONSE | cut -d"." -f 1)
 UNIT=s
@@ -56,25 +58,25 @@ TIMEOUT="${VALUE}${UNIT}"
 
 echo "=== Timeout: $TIMEOUT"
 
-debug "== Running  python modules/python/tokenizeIt.py $SOURCE $TOKENS"
-python modules/python/tokenizeIt.py $SOURCE $TOKENS
+debug "== Running  python modules/python/tokenizeIt.py $SOURCE_FILE $TOKEN_FILE"
+python modules/python/tokenizeIt.py $SOURCE_FILE $TOKEN_FILE
 
 checkResult "Tokenization failed"
 
-debug "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS"
-erl -noshell -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS 2>/dev/null
+debug "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKEN_FILE -s init stop > $MUTATIONS_FILE"
+erl -noshell -pa ebin -pa elib -s mutator print $TOKEN_FILE -s init stop > $MUTATIONS_FILE 2>/dev/null
 
 checkResult "### Mutation pool failed" 1 "=== Mutation pool OK"
 
-debug "== Running python modules/python/render.py $MUTATIONS $OUTPUT_TEMPLATE"
-python modules/python/renderIt.py $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
+debug "== Running python modules/python/render.py $MUTATIONS_FILE $OUTPUT_TEMPLATE"
+python modules/python/renderIt.py $MUTATIONS_FILE $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
 done
 echo
  
 checkResult  "### Mutation rendering FAIL" 1 "=== Mutation rendering OK"
 
-STATS_LINES=$( wc -l $SOURCE | cut -d" " -f1 )
+STATS_LINES=$( wc -l $SOURCE_FILE | cut -d" " -f1 )
 STATS_TOTAL_MUTATIONS=0
 STATS_WRONG_MUTATIONS=0
 STATS_GOOD_MUTATIONS=0
@@ -99,21 +101,21 @@ for FILE in $OUTPUT_TEMPLATE*.py ; do
 done
 
 echo "== Running tests"
-cp $SOURCE $SOURCE.bak
+cp $SOURCE_FILE $SOURCE_FILE.bak
 
 for FILE in $OUTPUT_TEMPLATE*.py ; do
-  cp $FILE $SOURCE
-  rm ${SOURCE}c
-  timeout "$TIMEOUT" python $TEST >/dev/null 2>&1
+  cp $FILE $SOURCE_FILE
+  rm ${SOURCE_FILE}c
+  timeout "$TIMEOUT" python $TEST_FILE >/dev/null 2>&1
   RESULT=$?
   if [ $RESULT -eq  0 ]; then
      echo "--- TEST PASS, THATS BAD -- $FILE"
      STATS_SURVIVORS=$(( $STATS_SURVIVORS + 1 ))
-     DIFFS="${DIFFS}\ndiff -w $SOURCE $FILE ;#SURVIVOR"
+     DIFFS="${DIFFS}\ndiff -w $SOURCE_FILE $FILE ;#SURVIVOR"
   elif [ $RESULT -eq  124 ]; then
      echo "--- TEST TIMEOUT, CHECK YOURSELF -- $FILE"
      STATS_TIMEOUTS=$(( $STATS_TIMEOUTS + 1 ))
-     DIFFS="${DIFFS}\ndiff -w $SOURCE $FILE ;#TIMEOUT"
+     DIFFS="${DIFFS}\ndiff -w $SOURCE_FILE $FILE ;#TIMEOUT"
   else
      echo "--- TEST BROKEN, THATS GOOD -- $FILE"
      rm $FILE
@@ -121,7 +123,7 @@ for FILE in $OUTPUT_TEMPLATE*.py ; do
   fi
 done
 
-cp $SOURCE.bak $SOURCE
+cp $SOURCE_FILE.bak $SOURCE_FILE
 
 
 STATS_TIME_STOP=$( date "+%s" )
@@ -129,8 +131,8 @@ STATS_TIME=$(( $STATS_TIME_STOP - $STATS_TIME_START))
 
 echo
 rm -f $REPORT
-output "SOURCE                 $SOURCE"
-output "TEST                   $TEST"
+output "SOURCE                 $SOURCE_FILE"
+output "TEST                   $TEST_FILE"
 output "TIMEOUT                $TIMEOUT"
 output "LINES                  $STATS_LINES"
 output "TIME                   $STATS_TIME seconds"

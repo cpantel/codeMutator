@@ -12,14 +12,16 @@ fi
 # check quotes in every variable
 BASE=$(pwd)/test/php
 
+EXT="php"
+
 NAME="$1"
 
-PRG=$NAME.php
+PRG=$NAME.${EXT}
 
-SOURCE=$BASE/$PRG
-TOKENS=$BASE/mutations/$PRG.seed.json
-TEST=$BASE/${NAME}Test.php
-MUTATIONS=$BASE/mutations/$PRG.mutations.json
+SOURCE_FILE=$BASE/$PRG
+TOKEN_FILE=$BASE/mutations/$PRG.seed.json
+TEST_FILE=$BASE/${NAME}Test.${EXT}
+MUTATIONS_FILE=$BASE/mutations/$PRG.mutations.json
 OUTPUT_DIR=$BASE/mutations
 OUTPUT_TEMPLATE=$OUTPUT_DIR/$NAME
 REPORT=$OUTPUT_DIR/report.txt
@@ -28,18 +30,18 @@ STATS_TIME_START=$( date "+%s" )
 prepareWorkspace $OUTPUT_DIR
 
 echo "== Sanity check and timeout sampling"
-php -l $SOURCE >/dev/null 2>&1
-checkResult "### Source syntax error: $SOURCE" 1 "=== Source syntax check ok: $SOURCE"
+php -l $SOURCE_FILE >/dev/null 2>&1
+checkResult "### Source syntax error: $SOURCE_FILE" 1 "=== Source syntax check ok: $SOURCE_FILE"
 
-php -l $TEST >/dev/null 2>&1
+php -l $TEST_FILE >/dev/null 2>&1
 
-checkResult "### Test syntax error: $TEST" 1 "=== Test syntax check ok: $TEST"
+checkResult "### Test syntax error: $TEST_FILE" 1 "=== Test syntax check ok: $TEST_FILE"
 
-phpunit $TEST 1>/dev/null 2>&1
+phpunit $TEST_FILE 1>/dev/null 2>&1
 
-checkResult "### Reference test failed: $TEST" 1  "=== Reference test ok: $TEST"
+checkResult "### Reference test failed: $TEST_FILE" 1  "=== Reference test ok: $TEST_FILE"
 
-RESPONSE=$(phpunit $TEST | grep -e "Time: .*, Memory:" | cut -d" " -f 2,3)
+RESPONSE=$(phpunit $TEST_FILE | grep -e "Time: .*, Memory:" | cut -d" " -f 2,3)
 
 VALUE=$( echo $RESPONSE | cut -d" " -f 1)
 UNIT=$( echo $RESPONSE | cut -d" " -f 2 | cut -b 1)
@@ -56,25 +58,25 @@ TIMEOUT="${VALUE}${UNIT}"
 
 echo "=== Timeout: $TIMEOUT"
 
-debug "== Running php php/tokenize.php $SOURCE $TOKENS"
-php modules/php/tokenize.php $SOURCE $TOKENS
+debug "== Running php php/tokenize.php $SOURCE_FILE $TOKEN_FILE"
+php modules/php/tokenize.php $SOURCE_FILE $TOKEN_FILE
 
 checkResult "### Tokenization failed" 1 "=== Tokenization OK"
 
-debug "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS" 
-erl -noshell -pa ebin -pa elib -s mutator print $TOKENS -s init stop > $MUTATIONS 2>/dev/null
+debug "== Running erl -noshell  -pa ebin -pa elib -s mutator print $TOKEN_FILE -s init stop > $MUTATIONS_FILE" 
+erl -noshell -pa ebin -pa elib -s mutator print $TOKEN_FILE -s init stop > $MUTATIONS_FILE 2>/dev/null
 
 checkResult "### Mutation pool failed" 1 "=== Mutation pool OK"
 
-debug "== Running php php/mutate.php $MUTATIONS $OUTPUT_TEMPLATE"
-php modules/php/render.php $MUTATIONS $OUTPUT_TEMPLATE | while read LINE; do
+debug "== Running php php/mutate.php $MUTATIONS_FILE $OUTPUT_TEMPLATE"
+php modules/php/render.php $MUTATIONS_FILE $OUTPUT_TEMPLATE | while read LINE; do
     echo -n "."
 done
 echo
 
 checkResult  "### Mutation rendering FAIL" 1 "=== Mutation rendering OK"
 
-STATS_LINES=$( wc -l $SOURCE | cut -d" " -f1 )
+STATS_LINES=$( wc -l $SOURCE_FILE | cut -d" " -f1 )
 STATS_TOTAL_MUTATIONS=0
 STATS_WRONG_MUTATIONS=0
 STATS_GOOD_MUTATIONS=0
@@ -100,20 +102,20 @@ done
 
 
 echo "== Running tests"
-cp $SOURCE $SOURCE.bak
+cp $SOURCE_FILE $SOURCE_FILE.bak
 
 for FILE in $OUTPUT_TEMPLATE*.php ; do
-  cp $FILE $SOURCE
-  timeout "$TIMEOUT" phpunit $TEST >/dev/null 2>&1
+  cp $FILE $SOURCE_FILE
+  timeout "$TIMEOUT" phpunit $TEST_FILE >/dev/null 2>&1
   RESULT=$?
   if [ $RESULT -eq  0 ]; then
      echo "--- TEST PASS, THATS BAD -- $FILE"
      STATS_SURVIVORS=$(( $STATS_SURVIVORS + 1 ))
-     DIFFS="${DIFFS}\ndiff -w $SOURCE $FILE ;#SURVIVOR"
+     DIFFS="${DIFFS}\ndiff -w $SOURCE_FILE $FILE ;#SURVIVOR"
   elif [ $RESULT -eq  124 ]; then
      echo "--- TEST TIMEOUT, CHECK YOURSELF -- $FILE"
      STATS_TIMEOUTS=$(( $STATS_TIMEOUTS + 1 ))
-     DIFFS="${DIFFS}\ndiff -w $SOURCE $FILE ;#TIMEOUT"
+     DIFFS="${DIFFS}\ndiff -w $SOURCE_FILE $FILE ;#TIMEOUT"
   else
      echo "--- TEST BROKEN, THATS GOOD -- $FILE"
      rm $FILE
@@ -121,7 +123,7 @@ for FILE in $OUTPUT_TEMPLATE*.php ; do
   fi
 done
 
-cp $SOURCE.bak $SOURCE
+cp $SOURCE_FILE.bak $SOURCE_FILE
 
 
 STATS_TIME_STOP=$( date "+%s" )
@@ -129,8 +131,8 @@ STATS_TIME=$(( $STATS_TIME_STOP - $STATS_TIME_START))
 
 echo
 rm -f $REPORT
-output "SOURCE                 $SOURCE"
-output "TEST                   $TEST"
+output "SOURCE                 $SOURCE_FILE"
+output "TEST                   $TEST_FILE"
 output "TIMEOUT                $TIMEOUT"
 output "LINES                  $STATS_LINES"
 output "TIME                   $STATS_TIME seconds"
